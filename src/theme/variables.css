@@ -1,2 +1,45 @@
-/* For information on how to create your own theme, please refer to:
-http://ionicframework.com/docs/theming/ */
+/* src/theme/variables.css */
+:root {
+  /* ... (panatilihin ang lumang variables mo) ... */
+  --fixora-green: #1a4d3e;
+  --fixora-green-light: #2d6b56;
+  --fixora-green-pale: #d1fae5;
+  --fixora-bg: #f5f7f6;
+  --fixora-text: #111827;
+  --fixora-text-muted: #6b7280;
+  --fixora-border: #e5e7eb;
+
+  /* ✅ BAGONG SOFT UI THEME VARIABLES */
+  --soft-bg: linear-gradient(180deg, #e0f2fe 0%, #f0fdf4 100%);
+  --soft-card-bg: rgba(255, 255, 255, 0.85);
+  --soft-card-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.08);
+  --soft-glass-border: 1px solid rgba(255, 255, 255, 0.6);
+  
+  /* 3D Icon Variables */
+  --icon-3d-bg: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
+  --icon-3d-shadow: 4px 4px 10px rgba(0, 0, 0, 0.05), -4px -4px 10px rgba(255, 255, 255, 0.8);
+  
+  /* Hero Card Gradient */
+  --hero-gradient: linear-gradient(135deg, #0ea5e9 0%, #14b8a6 100%);
+
+  /* Responsive spacing, radius, font sizes... (panatilihin ang luma) */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-2xl: 32px; /* Bagong radius para sa soft cards */
+  --fs-xs: clamp(11px, 2.8vw, 12px);
+  --fs-sm: clamp(13px, 3.2vw, 14px);
+  --fs-base: clamp(14px, 3.6vw, 15px);
+  --fs-md: clamp(15px, 4vw, 16px);
+  --fs-lg: clamp(18px, 4.5vw, 20px);
+  --fs-xl: clamp(20px, 5vw, 24px);
+  --fs-2xl: clamp(24px, 6vw, 28px);
+  --content-max: 640px;
+  --content-wide: 900px;
+}

@@ -1,0 +1,376 @@
+ion-content.customer-home,
+ion-content.bookings-page,
+ion-content.book-page,
+ion-content.detail-page,
+ion-content.profile-page,
+ion-content.support-page,
+ion-content.review-page,
+ion-content.notif-page,
+ion-content.mech-dash,
+ion-content.job-detail,
+ion-content.inv-page,
+ion-content.mech-profile,
+ion-content.customer-chat-page,
+ion-content.mechanic-chat-page {
+  --background: linear-gradient(180deg, #f1f8f6 0%, #f7faf9 42%, #f1f5f9 100%);
+  --user-accent: #0f766e;
+  --user-accent-dark: #115e59;
+  --user-ink: #172b2a;
+  --user-muted: #64748b;
+  --user-border: #e3ece9;
+  --user-card-shadow: 0 10px 28px rgba(20, 52, 44, 0.07);
+}
+
+ion-content.track-page {
+  --user-accent: #0f766e;
+  --user-accent-dark: #115e59;
+  --user-ink: #172b2a;
+  --user-muted: #64748b;
+  --user-border: #e3ece9;
+  --user-card-shadow: 0 10px 28px rgba(20, 52, 44, 0.07);
+}
+
+.customer-tab-bar,
+.mechanic-tab-bar {
+  --background: rgba(255, 255, 255, 0.96);
+  --border: 1px solid #e7eeeb;
+  --color: #84928f;
+  --color-selected: #0f766e;
+  --padding-top: 8px;
+  --padding-bottom: max(8px, env(safe-area-inset-bottom));
+  box-shadow: 0 -8px 24px rgba(20, 52, 44, 0.08);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.customer-tab-bar ion-tab-button,
+.mechanic-tab-bar ion-tab-button {
+  --color: #84928f;
+  --color-selected: #0f766e;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.customer-tab-bar ion-tab-button ion-icon,
+.mechanic-tab-bar ion-tab-button ion-icon {
+  font-size: 21px;
+}
+
+ion-content.customer-home .mechanic-card,
+ion-content.bookings-page .booking-card,
+ion-content.book-page .form-section,
+ion-content.detail-page .detail-card,
+ion-content.detail-page .mechanic-card-detail,
+ion-content.profile-page .profile-card,
+ion-content.profile-page .stat-box,
+ion-content.support-page .support-quick-card,
+ion-content.support-page .support-form,
+ion-content.support-page .support-faq,
+ion-content.review-page .review-card,
+ion-content.notif-page .notif-item,
+ion-content.mech-dash .mech-stat-card,
+ion-content.mech-dash .mech-job-card,
+ion-content.mech-dash .mech-empty,
+ion-content.job-detail .job-card,
+ion-content.inv-page .inv-card,
+ion-content.inv-page .inv-empty,
+ion-content.mech-profile .mp-card {
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid var(--user-border);
+  border-radius: 20px;
+  box-shadow: var(--user-card-shadow);
+}
+
+ion-content.customer-home .mechanic-card,
+ion-content.bookings-page .booking-card,
+ion-content.notif-page .notif-item,
+ion-content.mech-dash .mech-job-card,
+ion-content.inv-page .inv-card {
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+}
+
+ion-content.customer-home .mechanic-card:hover,
+ion-content.bookings-page .booking-card:hover,
+ion-content.notif-page .notif-item:hover,
+ion-content.mech-dash .mech-job-card:hover,
+ion-content.inv-page .inv-card:hover {
+  transform: translateY(-2px);
+  border-color: #c9ded8;
+  box-shadow: 0 14px 32px rgba(20, 52, 44, 0.11);
+}
+
+ion-content.bookings-page .filter-tab,
+ion-content.customer-home .category-pill {
+  border-radius: 999px;
+  border-color: var(--user-border);
+}
+
+ion-content.bookings-page .filter-tab.active,
+ion-content.customer-home .category-pill.active {
+  background: linear-gradient(135deg, #0f766e, #14a38b);
+  color: white;
+  border-color: transparent;
+  box-shadow: 0 6px 16px rgba(15, 118, 110, 0.22);
+}
+
+ion-content.book-page .service-type-card,
+ion-content.book-page .vehicle-option {
+  border-color: var(--user-border);
+  border-radius: 16px;
+  box-shadow: 0 3px 12px rgba(20, 52, 44, 0.04);
+}
+
+ion-content.book-page .service-type-card.active,
+ion-content.book-page .vehicle-option.active {
+  border-color: #0f766e;
+  background: #f0fdfa;
+  box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.1);
+}
+
+ion-content.book-page .service-type-card.active ion-icon,
+ion-content.book-page .service-type-card.active span,
+ion-content.book-page .vehicle-option.active .vehicle-icon ion-icon,
+ion-content.detail-page .detail-value.primary,
+ion-content.detail-page .detail-icon,
+ion-content.profile-page .stat-box .stat-value,
+ion-content.profile-page .section-action-btn,
+ion-content.mech-dash .mech-section-head button,
+ion-content.mech-dash .mech-job-icon,
+ion-content.job-detail .job-info-row ion-icon,
+ion-content.inv-page .inv-icon,
+ion-content.mech-profile .mp-chip.active {
+  color: var(--user-accent);
+}
+
+ion-content.book-page .form-input:focus-within,
+ion-content.support-page .support-form input:focus,
+ion-content.support-page .support-form textarea:focus,
+ion-content.review-page .review-textarea:focus,
+ion-content.mech-profile .mp-input:focus-within {
+  border-color: var(--user-accent);
+  box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.1);
+}
+
+ion-content.support-page .support-submit,
+ion-content.review-page .review-submit-btn,
+ion-content.mech-profile .mp-save,
+ion-content.job-detail .job-action-btn.primary,
+ion-content.job-detail .job-customer-avatar,
+ion-content.inv-page .inv-add-btn,
+ion-content.mech-profile .mp-chip.active {
+  --background: var(--user-accent-dark);
+  background: var(--user-accent-dark);
+}
+
+ion-content.support-page .support-submit,
+ion-content.review-page .review-submit-btn,
+ion-content.job-detail .job-action-btn.primary {
+  color: #fff;
+}
+
+ion-content.mech-profile .mp-chip.active {
+  color: #fff;
+  border-color: var(--user-accent-dark);
+}
+
+ion-content.mech-dash .mech-dash-header,
+ion-content.job-detail .job-detail-header,
+ion-content.inv-page .inv-header,
+ion-content.mech-profile .mp-header,
+ion-content.profile-page .profile-header,
+ion-content.support-page .support-header,
+ion-content.review-page .review-header,
+ion-content.notif-page .notif-header {
+  background: linear-gradient(135deg, #115e59 0%, #0f766e 58%, #14a38b 100%);
+}
+
+ion-content.mech-dash .mech-stat-icon.green,
+ion-content.mech-dash .mech-job-icon,
+ion-content.inv-page .inv-icon:not(.low) {
+  background: #e6f5f0;
+}
+
+ion-content.mech-dash .mech-job-status,
+ion-content.mech-dash .mech-stat-icon {
+  border-radius: 14px;
+}
+
+ion-content.customer-chat-page .chat-room-header,
+ion-content.mechanic-chat-page .chat-room-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  color: var(--user-ink);
+  background: rgba(255, 255, 255, 0.9);
+  border-bottom: 1px solid var(--user-border);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+ion-content.customer-chat-page .chat-room-header .header-content,
+ion-content.mechanic-chat-page .chat-room-header .header-content {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 12px 16px;
+}
+
+ion-content.customer-chat-page .back-btn,
+ion-content.mechanic-chat-page .back-btn {
+  color: var(--user-ink);
+  background: #eef4f2;
+}
+
+ion-content.customer-chat-page .chat-room-info h3,
+ion-content.mechanic-chat-page .chat-room-info h3 {
+  color: var(--user-ink);
+}
+
+ion-content.customer-chat-page .chat-room-status,
+ion-content.mechanic-chat-page .chat-room-status {
+  color: var(--user-muted);
+}
+
+ion-content.customer-chat-page .messages-area,
+ion-content.mechanic-chat-page .messages-area {
+  width: min(100%, 960px);
+  margin: 0 auto;
+  padding-bottom: calc(108px + env(safe-area-inset-bottom));
+}
+
+ion-content.customer-chat-page .message-row:not(.own) .message-bubble,
+ion-content.mechanic-chat-page .message-row:not(.own) .message-bubble {
+  background: #fff;
+  border: 1px solid var(--user-border);
+  box-shadow: 0 3px 10px rgba(20, 52, 44, 0.06);
+}
+
+ion-content.customer-chat-page .message-row.own .message-bubble,
+ion-content.mechanic-chat-page .message-row.own .message-bubble {
+  background: linear-gradient(135deg, #0f766e, #14a38b);
+  box-shadow: 0 5px 14px rgba(15, 118, 110, 0.2);
+}
+
+ion-content.customer-chat-page .chat-input-wrapper,
+ion-content.mechanic-chat-page .chat-input-wrapper {
+  position: fixed;
+  bottom: calc(68px + env(safe-area-inset-bottom));
+  left: 16px;
+  right: 16px;
+  width: auto;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 8px 8px 8px 18px;
+  border: 1px solid var(--user-border);
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 10px 30px rgba(20, 52, 44, 0.14);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  z-index: 100;
+}
+
+ion-content.customer-chat-page .chat-input-wrapper input,
+ion-content.mechanic-chat-page .chat-input-wrapper input {
+  min-height: 44px;
+  border: 0;
+  outline: 0;
+  background: transparent;
+}
+
+ion-content.customer-chat-page .send-btn,
+ion-content.mechanic-chat-page .send-btn {
+  background: linear-gradient(135deg, #0f766e, #14a38b);
+  box-shadow: 0 4px 12px rgba(15, 118, 110, 0.24);
+}
+
+ion-content.track-page .track-info-card {
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 16px 40px rgba(20, 52, 44, 0.16);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+ion-content.track-page .track-action-btn.primary {
+  background: linear-gradient(135deg, #0f766e, #14a38b);
+  box-shadow: 0 8px 20px rgba(15, 118, 110, 0.24);
+}
+
+ion-content.customer-home :focus-visible,
+ion-content.bookings-page :focus-visible,
+ion-content.book-page :focus-visible,
+ion-content.detail-page :focus-visible,
+ion-content.profile-page :focus-visible,
+ion-content.support-page :focus-visible,
+ion-content.review-page :focus-visible,
+ion-content.notif-page :focus-visible,
+ion-content.track-page :focus-visible,
+ion-content.mech-dash :focus-visible,
+ion-content.job-detail :focus-visible,
+ion-content.inv-page :focus-visible,
+ion-content.mech-profile :focus-visible {
+  outline: 3px solid rgba(15, 118, 110, 0.45);
+  outline-offset: 3px;
+}
+
+@media (min-width: 768px) {
+  ion-content.customer-home .home-container,
+  ion-content.bookings-page .bookings-container,
+  ion-content.book-page .book-container,
+  ion-content.detail-page .detail-container,
+  ion-content.profile-page .profile-container,
+  ion-content.support-page .support-container,
+  ion-content.review-page .review-container,
+  ion-content.notif-page .notif-container,
+  ion-content.mech-dash .mech-dash-container,
+  ion-content.mech-dash .mech-section,
+  ion-content.job-detail .job-section,
+  ion-content.job-detail .job-actions-section,
+  ion-content.inv-page .inv-list,
+  ion-content.mech-profile .mp-section,
+  ion-content.mech-profile .mp-actions {
+    max-width: 1200px;
+    margin-right: auto;
+    margin-left: auto;
+  }
+}
+
+@media (max-width: 420px) {
+  ion-content.customer-chat-page .messages-area,
+  ion-content.mechanic-chat-page .messages-area {
+    padding-right: 12px;
+    padding-left: 12px;
+  }
+
+  ion-content.customer-chat-page .chat-input-wrapper,
+  ion-content.mechanic-chat-page .chat-input-wrapper {
+    left: 12px;
+    right: 12px;
+  }
+
+  ion-content.track-page .track-info-card {
+    bottom: calc(82px + env(safe-area-inset-bottom));
+    padding: 18px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ion-content.customer-home *,
+  ion-content.bookings-page *,
+  ion-content.book-page *,
+  ion-content.detail-page *,
+  ion-content.profile-page *,
+  ion-content.support-page *,
+  ion-content.review-page *,
+  ion-content.notif-page *,
+  ion-content.track-page *,
+  ion-content.mech-dash *,
+  ion-content.job-detail *,
+  ion-content.inv-page *,
+  ion-content.mech-profile * {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}

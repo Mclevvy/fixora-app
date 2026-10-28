@@ -1,0 +1,429 @@
+/* src/pages/customer/CustomerHome.css */
+
+.customer-home {
+  --background: var(--soft-bg);
+}
+
+.home-container {
+  width: 100%;
+  padding-bottom: 20px;
+}
+
+/* ============================
+   HEADER
+   ============================ */
+/* ✅ BINAGO: Binawasan ang taas (padding) para hindi sobrang luwag sa taas */
+.home-header {
+  background: transparent;
+  padding: 20px 16px 20px; /* Binaba mula 30px to 20px */
+  position: relative;
+}
+
+@media (min-width: 768px) {
+  .home-header { padding: 30px 32px 24px; }
+}
+@media (min-width: 1200px) {
+  .home-header { padding: 40px 48px 30px; }
+}
+
+.header-top {
+  display: flex;
+  align-items: flex-start; /* ✅ Inalign sa taas para pantay sa notification bell */
+  justify-content: space-between;
+  margin-bottom: 16px; /* ✅ Binawasan ang space bago pumunta sa "What Service..." */
+  width: 100%;
+}
+
+/* ✅ BAGONG GREETING STYLES (Pababa at Italic) */
+.header-greeting {
+  display: flex;
+  flex-direction: column; /* ✅ Pinababa */
+  align-items: flex-start;
+  gap: 2px; /* ✅ Konting space lang sa pagitan ng Welcome at Name */
+}
+
+.greeting-subtext {
+  margin: 0;
+  font-size: 14px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.greeting-name {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #0ea5e9; 
+  font-style: italic; /* ✅ Naka-italic */
+  text-transform: capitalize;
+}
+
+.header-icons {
+  display: flex;
+  gap: 12px;
+}
+
+.icon-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--soft-card-bg);
+  backdrop-filter: blur(10px);
+  border: var(--soft-glass-border);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #1e293b;
+  font-size: 20px;
+  cursor: pointer;
+  position: relative;
+}
+
+.notification-badge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  background: #ef4444;
+  color: white;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  border: 2px solid var(--soft-card-bg);
+}
+
+.home-title {
+  font-size: clamp(24px, 5vw, 32px);
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 20px 0;
+  line-height: 1.2;
+}
+
+/* ============================
+   EMERGENCY CARD (Hero Gradient)
+   ============================ */
+.emergency-card {
+  background: var(--hero-gradient);
+  border-radius: var(--radius-2xl);
+  padding: 24px;
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  box-shadow: 0 20px 40px -10px rgba(20, 184, 166, 0.4);
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+}
+
+.emergency-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 100%);
+  pointer-events: none;
+}
+
+.emergency-content {
+  flex: 1;
+  min-width: 0;
+  z-index: 1;
+}
+
+.emergency-badge {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(4px);
+  color: white;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 6px 12px;
+  border-radius: 20px;
+  letter-spacing: 1px;
+  margin-bottom: 12px;
+}
+
+.emergency-title {
+  font-size: clamp(18px, 3vw, 22px);
+  font-weight: 700;
+  color: white;
+  margin: 0 0 8px 0;
+  line-height: 1.3;
+}
+
+.emergency-subtitle {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0 0 16px 0;
+}
+
+.book-now-btn {
+  background: white;
+  color: #0ea5e9;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 16px;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: transform 0.2s;
+}
+
+.book-now-btn:active { transform: scale(0.95); }
+
+.emergency-image {
+  width: 110px;
+  height: 110px;
+  border-radius: 20px;
+  object-fit: cover;
+  border: 3px solid rgba(255,255,255,0.2);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+/* ============================
+   SEARCH BAR (Glassmorphism)
+   ============================ */
+.search-bar {
+  background: var(--soft-card-bg);
+  backdrop-filter: blur(15px);
+  border: var(--soft-glass-border);
+  border-radius: var(--radius-xl);
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 16px;
+  margin-top: -10px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+  position: relative;
+  z-index: 10;
+}
+
+@media (min-width: 768px) {
+  .search-bar { margin: 0 32px; margin-top: -15px; }
+}
+@media (min-width: 1200px) {
+  .search-bar { margin: 0 48px; margin-top: -15px; }
+}
+
+.search-bar ion-icon { color: #64748b; font-size: 20px; }
+.search-bar input { border: none; outline: none; flex: 1; font-size: 15px; background: transparent; color: #1e293b; }
+.search-bar input::placeholder { color: #94a3b8; }
+
+/* ============================
+   SECTIONS
+   ============================ */
+.section-padding { padding: 24px 16px 0; width: 100%; }
+@media (min-width: 768px) { .section-padding { padding: 28px 32px 0; } }
+@media (min-width: 1200px) { .section-padding { padding: 32px 48px 0; } }
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0;
+}
+
+.see-all-btn {
+  color: #0ea5e9;
+  font-size: 13px;
+  font-weight: 700;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+/* ============================
+   CATEGORIES (3D Pills)
+   ============================ */
+.categories-scroll {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  scrollbar-width: none;
+}
+
+.category-pill {
+  padding: 10px 20px;
+  border-radius: 16px;
+  background: var(--soft-card-bg);
+  border: var(--soft-glass-border);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03), inset 0 2px 0 rgba(255, 255, 255, 0.8);
+  color: #475569;
+  font-size: 14px;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.category-pill.active {
+  background: var(--hero-gradient);
+  color: white;
+  border: none;
+  box-shadow: 0 6px 15px -5px rgba(20, 184, 166, 0.4);
+}
+
+/* ============================
+   MECHANICS (Soft Cards)
+   ============================ */
+.mechanics-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  padding-bottom: 20px;
+  width: 100%;
+}
+
+@media (min-width: 640px) { .mechanics-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1024px) { .mechanics-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (min-width: 1440px) { .mechanics-grid { grid-template-columns: repeat(4, 1fr); } }
+
+.mechanic-card {
+  background: var(--soft-card-bg);
+  backdrop-filter: blur(10px);
+  border: var(--soft-glass-border);
+  border-radius: var(--radius-xl);
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  box-shadow: var(--soft-card-shadow);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.mechanic-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.1);
+}
+
+/* 3D Avatar Wrapper */
+.mechanic-avatar-wrapper {
+  position: relative;
+  width: 64px;
+  height: 64px;
+  border-radius: 18px;
+  background: var(--icon-3d-bg);
+  box-shadow: var(--icon-3d-shadow);
+  padding: 4px;
+}
+
+.mechanic-avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 14px;
+  object-fit: cover;
+}
+
+/* ✅ 3-STATE AVAILABILITY DOTS */
+.availability-dot {
+  position: absolute;
+  bottom: -4px;
+  right: -4px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 3px solid white;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+.availability-dot.available { background: #10b981; } /* Green */
+.availability-dot.busy { background: #f59e0b; }      /* Orange */
+.availability-dot.offline { background: #94a3b8; }  /* Gray */
+
+.mechanic-info { flex: 1; min-width: 0; }
+
+.mechanic-name { 
+  font-size: 16px; 
+  font-weight: 800; 
+  color: #0f172a; 
+  margin: 0 0 4px 0; 
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.mechanic-specialty { font-size: 13px; color: #64748b; margin: 0 0 10px 0; }
+
+.mechanic-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f8fafc;
+  padding: 8px 12px;
+  border-radius: 10px;
+}
+
+.mechanic-price { color: #0f172a; font-weight: 800; font-size: 15px; }
+.mechanic-price span { font-size: 11px; color: #64748b; font-weight: 500; }
+
+.mechanic-rating { display: flex; align-items: center; gap: 4px; color: #475569; font-size: 13px; font-weight: 600; }
+.mechanic-rating ion-icon { color: #f59e0b; font-size: 14px; }
+
+/* ✅ BOOK BUTTON STATE */
+.book-btn {
+  background: #f0fdf4;
+  color: #1a4d3e;
+  border: 1.5px solid #bbf7d0;
+  padding: 12px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  width: 100%;
+  transition: all 0.2s;
+  text-transform: uppercase;
+}
+
+.book-btn:hover:not(:disabled) {
+  background: #1a4d3e;
+  color: white;
+}
+
+.book-btn:disabled {
+  background: #f1f5f9;
+  color: #94a3b8;
+  border-color: #e2e8f0;
+  cursor: not-allowed;
+}
+
+/* Loading / Empty */
+.loading-container, .empty-container {
+  display: flex; flex-direction: column; align-items: center; padding: 40px 20px; color: #64748b; text-align: center;
+}
+
+@media (max-width: 360px) {
+  .home-title { font-size: 20px; }
+  .emergency-card { padding: 16px; gap: 10px; }
+  .emergency-image { width: 80px; height: 80px; }
+  .book-now-btn { padding: 10px 16px; font-size: 11px; }
+}
+
+/* Idagdag ito sa ibaba ng .mechanic-meta sa CustomerHome.css */
+.mechanic-distance {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: #64748b;
+  margin-top: 6px;
+  font-weight: 500;
+}
+
+.mechanic-distance ion-icon {
+  font-size: 14px;
+  color: #0ea5e9;
+}

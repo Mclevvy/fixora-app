@@ -1,48 +1,87 @@
-import { Navigate, Route } from 'react-router-dom';
-import { IonApp, IonRouterOutlet, setupIonicReact } from '@ionic/react';
+// src/App.tsx
+import React from 'react';
+import { IonApp, IonRouterOutlet, setupIonicReact, IonSpinner } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
-import Home from './pages/Home';
+import { Route, Navigate } from 'react-router-dom';
+import { AuthProvider, useAuth } from './context/AuthContext';
+import { NotificationProvider } from './context/NotificationContext';
 
-/* Core CSS required for Ionic components to work properly */
-import '@ionic/react/css/core.css';
-
-/* Basic CSS for apps built with Ionic */
-import '@ionic/react/css/normalize.css';
-import '@ionic/react/css/structure.css';
-import '@ionic/react/css/typography.css';
-
-/* Optional CSS utils that can be commented out */
-import '@ionic/react/css/padding.css';
-import '@ionic/react/css/float-elements.css';
-import '@ionic/react/css/text-alignment.css';
-import '@ionic/react/css/text-transformation.css';
-import '@ionic/react/css/flex-utils.css';
-import '@ionic/react/css/display.css';
-
-/**
- * Ionic Dark Mode
- * -----------------------------------------------------
- * For more info, please see:
- * https://ionicframework.com/docs/theming/dark-mode
- */
-
-/* import '@ionic/react/css/palettes/dark.always.css'; */
-/* import '@ionic/react/css/palettes/dark.class.css'; */
-import '@ionic/react/css/palettes/dark.system.css';
-
-/* Theme variables */
-import './theme/variables.css';
+import LoginPage from './pages/auth/LoginPage';
+import RegisterPage from './pages/auth/RegisterPage';
+import CustomerTabs from './pages/customer/CustomerTabs';
+import MechanicTabsLayout from './pages/mechanic/MechanicTabsLayout';
+import AdminTabs from './pages/admin/AdminTabs';
 
 setupIonicReact();
 
-const App: React.FC = () => (
-  <IonApp>
+const AppRoutes: React.FC = () => {
+  const { isAuthenticated, isLoading, user } = useAuth();
+
+  if (isLoading) {
+    return (
+      <IonApp>
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+          <IonSpinner name="crescent" />
+        </div>
+      </IonApp>
+    );
+  }
+
+  const getDefaultRoute = () => {
+    if (!user) return '/login';
+    switch (user.role) {
+      case 'customer': return '/customer/home';
+      case 'mechanic': return '/mechanic/dashboard';
+      case 'admin': return '/admin/users';
+      default: return '/login';
+    }
+  };
+
+  return (
     <IonReactRouter>
       <IonRouterOutlet>
-        <Route path="/home" element={<Home />} />
-        <Route path="/" element={<Navigate to="/home" replace />} />
+        <Route path="/login" element={
+          isAuthenticated ? <Navigate to={getDefaultRoute()} replace /> : <LoginPage />
+        } />
+        <Route path="/register" element={
+          isAuthenticated ? <Navigate to={getDefaultRoute()} replace /> : <RegisterPage />
+        } />
+
+        {/* Customer Routes (Tabs) */}
+        <Route path="/customer/*" element={
+          isAuthenticated && user?.role === 'customer'
+            ? <CustomerTabs />
+            : <Navigate to="/login" replace />
+        } />
+
+        {/* Mechanic Routes */}
+        <Route path="/mechanic/*" element={
+          isAuthenticated && user?.role === 'mechanic'
+            ? <MechanicTabsLayout />
+            : <Navigate to="/login" replace />
+        } />
+
+        {/* Admin Routes */}
+        <Route path="/admin/*" element={
+          isAuthenticated && user?.role === 'admin'
+            ? <AdminTabs />
+            : <Navigate to="/login" replace />
+        } />
+        
+        <Route path="/" element={<Navigate to={getDefaultRoute()} replace />} />
+        <Route path="*" element={<Navigate to={getDefaultRoute()} replace />} />
       </IonRouterOutlet>
     </IonReactRouter>
+  );
+};
+
+const App: React.FC = () => (
+  <IonApp>
+    <AuthProvider>
+      <NotificationProvider>
+        <AppRoutes />
+      </NotificationProvider>
+    </AuthProvider>
   </IonApp>
 );
 

@@ -1,0 +1,290 @@
+/* src/pages/mechanic/MechanicDashboard.css */
+
+.mech-dash {
+  --background: linear-gradient(180deg, #f0f9ff 0%, #e0f2fe 100%);
+}
+
+.mech-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+/* ============================
+   HEADER
+   ============================ */
+.mech-dash-header {
+  color: white;
+  padding: 40px 24px 35px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  
+  /* 🔥 ITO ANG NAG-FORCE SA LEFT */
+  align-items: flex-start; 
+  text-align: left;
+  
+  border-bottom-left-radius: 32px;
+  border-bottom-right-radius: 32px;
+  
+  background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%) !important; 
+  box-shadow: 0 10px 30px -10px rgba(37, 99, 235, 0.5) !important;
+  
+  position: relative;
+  overflow: hidden;
+}
+
+.mech-dash-header::before {
+  content: '';
+  position: absolute;
+  top: -50px;
+  right: -30px;
+  width: 180px;
+  height: 180px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.mech-header-info {
+  flex: 1;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  
+  /* 🔥 SIGURADUHING NAKA-LEFT DIN ANG LOOB */
+  align-items: flex-start;
+  width: 100%;
+  text-align: left;
+}
+
+.mech-greeting {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.mech-name {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 800;
+  line-height: 1.1;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+.mech-rating-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: white;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #0f172a;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  width: fit-content;
+  margin-top: 6px;
+}
+
+.mech-rating-badge ion-icon {
+  color: #f59e0b;
+  font-size: 14px;
+}
+
+.mech-review-count {
+  font-size: 11px;
+  color: #64748b;
+  font-weight: 600;
+}
+
+/* ✅ STYLES PARA SA EXTRA TEXT */
+.mech-header-extra {
+  margin-top: 16px;
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  text-align: left; /* 🔥 NAKA-LEFT DIN ITO */
+}
+
+.mech-ready-title {
+  margin: 0 0 4px 0;
+  font-size: 22px;
+  font-weight: 800;
+  color: white;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.mech-ready-desc {
+  margin: 0;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.4;
+  max-width: 95%;
+}
+
+/* ============================
+   STATS GRID
+   ============================ */
+.mech-stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  padding: 24px;
+  margin-top: -15px;
+  position: relative;
+  z-index: 2;
+}
+
+.mech-stat-card {
+  background: linear-gradient(145deg, #ffffff 0%, #f0f9ff 100%) !important;
+  border: 1px solid #e0f2fe !important;
+  border-radius: 20px;
+  padding: 16px;
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  box-shadow: 0 8px 20px -5px rgba(14, 165, 233, 0.1) !important;
+  transition: transform 0.2s ease;
+}
+
+.mech-stat-card:hover {
+  transform: translateY(-3px);
+}
+
+.mech-stat-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.mech-stat-icon.blue { background: #e0f2fe; color: #0ea5e9; }
+.mech-stat-icon.cyan { background: #ccfbf1; color: #0f766e; }
+.mech-stat-icon.yellow { background: #fef3c7; color: #b45309; }
+.mech-stat-icon.purple { background: #ede9fe; color: #6d28d9; }
+
+.mech-stat-info h3 { margin: 0; font-size: 20px; font-weight: 800; color: #0f172a; }
+.mech-stat-info p { margin: 2px 0 0; font-size: 12px; color: #64748b; font-weight: 600; }
+
+/* ============================
+   SECTIONS & CHARTS
+   ============================ */
+.mech-section {
+  padding: 0 24px 24px;
+}
+
+.mech-section-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.mech-section-head h2 {
+  font-size: 18px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0;
+}
+
+.mech-section-head button {
+  background: none;
+  border: none;
+  color: #0ea5e9;
+  font-weight: 700;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+}
+
+.chart-card {
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%) !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 20px;
+  padding: 16px 8px 16px 0;
+  box-shadow: 0 8px 20px -5px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* ============================
+   JOB CARDS
+   ============================ */
+.mech-job-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.mech-job-card {
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%) !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 18px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  cursor: pointer;
+  box-shadow: 0 6px 15px -3px rgba(0, 0, 0, 0.05) !important;
+  transition: transform 0.2s, box-shadow 0.2s;
+  height: 100%;
+}
+
+.mech-job-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1) !important;
+  border-color: #bae6fd !important;
+}
+
+.mech-job-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: #e0f2fe;
+  color: #0ea5e9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  margin-bottom: 8px;
+}
+
+.mech-job-info { flex: 1; min-width: 0; width: 100%; }
+.mech-job-info h4 { margin: 0; font-size: 13px; font-weight: 800; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mech-job-info p { margin: 4px 0 0; font-size: 11px; color: #64748b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.mech-job-status {
+  font-size: 10px;
+  padding: 4px 8px;
+  border-radius: 8px;
+  font-weight: 800;
+  margin-top: 10px;
+  align-self: flex-start;
+  text-transform: uppercase;
+}
+
+.mech-job-status.accepted { background: #dbeafe; color: #1e40af; }
+.mech-job-status.in-progress { background: #e0e7ff; color: #3730a3; }
+.mech-job-status.pending { background: #fef3c7; color: #92400e; }
+
+/* EMPTY STATE */
+.mech-empty {
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%) !important;
+  border: 1.5px dashed #cbd5e1 !important;
+  border-radius: 20px;
+  padding: 40px 20px;
+  text-align: center;
+  color: #94a3b8;
+  grid-column: 1 / -1;
+}
+
+.mech-empty ion-icon { font-size: 40px; margin-bottom: 8px; opacity: 0.5; }
+.mech-empty p { margin: 0; font-size: 13px; font-weight: 500; }

@@ -1,0 +1,212 @@
+/* src/pages/customer/ReviewPage.css */
+
+.review-container {
+  width: 100%;
+  min-height: 100vh;
+  padding-bottom: 40px;
+}
+
+.review-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  color: #64748b;
+}
+
+/* ============================
+   HEADER
+   ============================ */
+.review-header {
+  padding: 30px 20px 10px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+@media (min-width: 768px) {
+  .review-header { padding: 40px 32px 10px; }
+}
+
+.review-header .back-btn {
+  /* Glassmorphism style */
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  color: #0f172a;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s;
+}
+
+.review-header .back-btn:active {
+  transform: scale(0.95);
+}
+
+.review-header h1 {
+  margin: 0;
+  font-size: clamp(22px, 4vw, 28px);
+  font-weight: 800;
+  color: #0f172a;
+}
+
+/* ============================
+   CONTENT & GLASS CARD
+   ============================ */
+.review-content {
+  padding: 20px;
+}
+
+@media (min-width: 768px) {
+  .review-content {
+    max-width: 600px;
+    margin: 0 auto; 
+  }
+}
+
+.review-card {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 32px;
+  padding: 32px 24px;
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.08);
+  text-align: center;
+}
+
+/* ============================
+   MECHANIC INFO
+   ============================ */
+.review-mechanic-info {
+  margin-bottom: 24px;
+}
+
+.review-avatar {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  margin-bottom: 16px;
+  border: 4px solid white;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  object-fit: cover;
+}
+
+/* ✅ NAKA-CENTER — pantay sa gitna ng card at profile avatar */
+.review-mechanic-info h2 {
+  font-size: 16px;
+  color: #64748b;
+  font-weight: 500;
+  margin: 0;
+  line-height: 1.5;
+  text-align: center;
+}
+
+/* ✅ INLINE — para sumama sa isang linya kasama ang "?" */
+.review-mechanic-info h2 strong {
+  color: #0f172a;
+  font-weight: 800;
+  font-size: 20px;
+  display: inline;
+}
+
+/* ============================
+   STAR RATING
+   ============================ */
+.star-rating {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 28px;
+}
+
+.star-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  font-size: 44px;
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.star-btn:active {
+  transform: scale(0.8);
+}
+
+.star-filled {
+  color: #fbbf24;
+  filter: drop-shadow(0 4px 6px rgba(251, 191, 36, 0.4));
+}
+
+.star-empty {
+  color: #cbd5e1;
+}
+
+/* ============================
+   TEXTAREA
+   ============================ */
+.review-textarea {
+  width: 100%;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 24px;
+  padding: 18px;
+  font-size: 15px;
+  color: #0f172a;
+  background: rgba(255, 255, 255, 0.9);
+  resize: none;
+  outline: none;
+  font-family: inherit;
+  box-sizing: border-box;
+  margin-bottom: 24px;
+  transition: all 0.2s;
+}
+
+.review-textarea::placeholder {
+  color: #94a3b8;
+}
+
+.review-textarea:focus {
+  border-color: #0ea5e9;
+  background: white;
+  box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.1);
+}
+
+/* ============================
+   SUBMIT BUTTON
+   ============================ */
+.review-submit-btn {
+  width: 100%;
+  background: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%);
+  color: white;
+  border: none;
+  border-radius: 24px;
+  padding: 18px;
+  font-size: 16px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 8px 20px -5px rgba(14, 165, 233, 0.4);
+}
+
+.review-submit-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 25px -5px rgba(14, 165, 233, 0.5);
+}
+
+.review-submit-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.review-submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  box-shadow: none;
+}

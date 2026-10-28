@@ -1,0 +1,205 @@
+/* src/pages/customer/CustomerChat.css */
+
+/* Fallback background kung sakaling hindi mag-load ang inline */
+ion-content.customer-chat-page {
+  --background: linear-gradient(180deg, #f0f9ff 0%, #bae6fd 100%);
+}
+
+/* ============================
+   ✅ CHAT ROOM HEADER (Glassmorphism)
+   ============================ */
+.chat-room-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  padding: 12px 16px;
+}
+
+@media (min-width: 768px) {
+  .chat-room-header { padding: 16px 32px; }
+}
+
+.chat-room-header .header-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* 3D Back Button */
+.back-btn {
+  background: #f1f5f9;
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #0f172a;
+  font-size: 20px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.chat-room-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid white;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.chat-room-info { flex: 1; min-width: 0; }
+
+.chat-room-info h3 {
+  font-size: 16px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 2px 0;
+}
+
+.chat-room-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #0ea5e9; /* ✅ Sky Blue status text */
+  font-weight: 600;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #0ea5e9;
+}
+
+/* ============================
+   ✅ MESSAGES AREA
+   ============================ */
+.messages-area {
+  padding: 20px 16px 120px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: calc(100vh - 160px);
+}
+
+@media (min-width: 768px) {
+  .messages-area { padding: 24px 10% 120px; } 
+}
+
+.message-row { display: flex; gap: 8px; align-items: flex-end; }
+.message-row.own { justify-content: flex-end; }
+
+/* Chat Bubbles */
+.message-bubble {
+  max-width: 75%;
+  padding: 12px 16px;
+  border-radius: 20px;
+  font-size: 15px;
+  line-height: 1.4;
+  word-wrap: break-word;
+  position: relative;
+}
+
+/* Received (Mechanic) */
+.message-row:not(.own) .message-bubble {
+  background: white;
+  color: #0f172a;
+  border-bottom-left-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* Sent (Customer) - ✅ Fallback Blue color */
+.message-row.own .message-bubble {
+  background: #00b4d8;
+  color: white;
+  border-bottom-right-radius: 4px;
+}
+
+.message-time { font-size: 10px; margin-top: 6px; opacity: 0.7; display: block; }
+.message-row.own .message-time { text-align: right; color: rgba(255, 255, 255, 0.9); }
+.message-row:not(.own) .message-time { color: #94a3b8; }
+
+.message-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+/* ============================
+   ✅ FLOATING GLASS INPUT BAR
+   ============================ */
+.chat-input-wrapper {
+  position: fixed;
+  bottom: 85px; 
+  left: 16px;
+  right: 16px;
+  width: auto;
+  max-width: 900px;
+  margin: 0 auto;
+  
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 30px;
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.15);
+  
+  padding: 8px 8px 8px 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 100;
+}
+
+.chat-input-wrapper input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  padding: 10px 0;
+  font-size: 15px;
+  color: #0f172a;
+  min-width: 0;
+}
+
+.chat-input-wrapper input::placeholder { color: #94a3b8; }
+
+/* Send Button - ✅ Fallback Blue color */
+.send-btn {
+  background: #00b4d8;
+  color: white;
+  border: none;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.send-btn:active { transform: scale(0.95); }
+.send-btn:disabled { opacity: 0.5; cursor: not-allowed; box-shadow: none; }
+.send-btn ion-icon { font-size: 20px; }
+
+/* ============================
+   EMPTY & LOADING STATES
+   ============================ */
+.empty-conversation {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 60px 20px; text-align: center; color: #94a3b8; flex: 1;
+}
+.empty-conversation ion-icon { font-size: 64px; margin-bottom: 16px; opacity: 0.4; }
+.empty-conversation p { font-size: 15px; margin: 0; font-weight: 500; }
+.chat-loading { display: flex; flex-direction: column; align-items: center; padding: 60px 20px; color: #64748b; }

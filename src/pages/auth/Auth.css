@@ -1,0 +1,306 @@
+/* src/pages/auth/Auth.css */
+
+/* ✅ SOFT BLUE / CYAN BACKGROUND */
+.auth-page {
+  --background: linear-gradient(180deg, #e0f2fe 0%, #bae6fd 50%, #7dd3fc 100%);
+}
+
+.auth-wrapper {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  position: relative;
+}
+
+/* ✅ SOLID WHITE CARD */
+.auth-card {
+  width: 100%;
+  max-width: 440px;
+  background: #ffffff;
+  border-radius: 30px;
+  padding: 40px 32px; /* Default mobile padding */
+  box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.08), 0 5px 15px -5px rgba(0, 0, 0, 0.04);
+  position: relative;
+  z-index: 1;
+  animation: slideUp 0.5s ease-out;
+  
+  /* 🔥 Para hindi tumagas yung image sa rounded corners */
+  overflow: hidden; 
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ✅ LOGO (Default Mobile) */
+.auth-logo-header {
+  /* Kinakain ang padding ng card: 32px left/right, 40px top */
+  width: calc(100% + 64px); 
+  margin-left: -32px;
+  margin-right: -32px;
+  margin-top: -40px; 
+  margin-bottom: 24px;
+  display: block;
+}
+
+.auth-logo-img {
+  width: 100%;
+  display: block; 
+  height: auto;
+  
+  /* 🔥 Pwede mong i-uncomment ito kung gusto mong maging transparent yung itim */
+  /* mix-blend-mode: screen; */ 
+}
+
+.auth-title {
+  font-size: 26px;
+  font-weight: 800;
+  color: #0f172a;
+  text-align: center;
+  margin: 0 0 6px 0;
+}
+
+.auth-subtitle {
+  font-size: 14px;
+  color: #64748b;
+  text-align: center;
+  margin: 0 0 30px 0;
+}
+
+/* ============================
+   FORM & INPUTS
+   ============================ */
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.input-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 14px 18px;
+  transition: all 0.2s;
+}
+
+.input-group:focus-within {
+  border-color: #0ea5e9;
+  background: white;
+  box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.1);
+}
+
+.input-group ion-icon {
+  font-size: 20px;
+  color: #94a3b8;
+  flex-shrink: 0;
+}
+
+.input-group:focus-within ion-icon {
+  color: #0ea5e9;
+}
+
+.input-group input {
+  border: none;
+  outline: none;
+  background: transparent;
+  flex: 1;
+  font-size: 15px;
+  color: #0f172a;
+  min-width: 0;
+}
+
+.input-group input::placeholder {
+  color: #cbd5e1;
+}
+
+.password-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  color: #94a3b8;
+}
+
+.password-toggle:hover {
+  color: #0ea5e9;
+}
+
+.forgot-password a {
+  color: #0ea5e9;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.forgot-password a:hover {
+  text-decoration: underline;
+}
+
+/* ============================
+   BUTTONS
+   ============================ */
+.auth-btn {
+  background: #00b4d8; 
+  color: white;
+  border: none;
+  border-radius: 16px;
+  padding: 16px;
+  font-size: 16px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 8px;
+  letter-spacing: 0.5px;
+  box-shadow: 0 8px 20px -5px rgba(0, 180, 216, 0.4);
+}
+
+.auth-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  background: #0ea5e9;
+  box-shadow: 0 12px 25px -5px rgba(14, 165, 233, 0.5);
+}
+
+.auth-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.google-btn {
+  background: white;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 14px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #334155;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: all 0.2s;
+}
+
+.google-btn:hover:not(:disabled) {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+}
+
+.google-btn ion-icon {
+  font-size: 20px;
+  color: #ea4335;
+}
+
+/* ============================
+   DIVIDER & FOOTER
+   ============================ */
+.divider { display: flex; align-items: center; gap: 12px; margin: 8px 0; }
+.divider-line { flex: 1; height: 1px; background: #e2e8f0; }
+.divider-text { font-size: 12px; color: #94a3b8; font-weight: 700; letter-spacing: 1px; }
+
+.auth-footer { text-align: center; margin-top: 24px; font-size: 14px; color: #64748b; }
+.auth-footer a { color: #0ea5e9; font-weight: 800; text-decoration: none; margin-left: 4px; }
+.auth-footer a:hover { text-decoration: underline; }
+
+/* ============================
+   ROLE SELECTOR
+   ============================ */
+.role-selector {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+.role-option {
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 14px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-sizing: border-box;
+}
+
+.role-option:nth-child(3) {
+  grid-column: 1 / -1;
+  width: calc(50% - 5px);
+  justify-self: center;
+}
+
+.role-option ion-icon { font-size: 24px; color: #94a3b8; }
+.role-option span { font-size: 13px; font-weight: 700; color: #64748b; }
+
+.role-option.active {
+  background: #e0f2fe;
+  border-color: #7dd3fc;
+}
+
+.role-option.active ion-icon,
+.role-option.active span {
+  color: #0284c7;
+}
+
+/* ============================
+   RESPONSIVE (NA-AYOS NA DITO)
+   ============================ */
+@media (min-width: 768px) {
+  .auth-wrapper { padding: 40px; }
+  
+  /* Nagbago padding sa desktop (48px top/bottom, 40px left/right) */
+  .auth-card { 
+    max-width: 480px; 
+    padding: 48px 40px; 
+  }
+  
+  /* In-adjust ang margins para sumagad pa rin sa desktop */
+  .auth-logo-header {
+    width: calc(100% + 80px); /* 40px left + 40px right */
+    margin-left: -40px;
+    margin-right: -40px;
+    margin-top: -48px; /* 48px top padding */
+    margin-bottom: 32px;
+  }
+
+  /* TINANGGAL NA YUNG max-width: 300px DITO PARA SUMAGAD SA KANAN */
+  .auth-logo-img {
+    max-width: none; 
+  }
+
+  .auth-title { font-size: 30px; }
+}
+
+@media (max-width: 360px) {
+  /* Nagbago padding sa maliit na phone (32px top/bottom, 20px left/right) */
+  .auth-card { 
+    padding: 32px 20px; 
+    border-radius: 24px; 
+  }
+  
+  /* In-adjust ang margins para sa maliit na phone */
+  .auth-logo-header {
+    width: calc(100% + 40px); /* 20px left + 20px right */
+    margin-left: -20px;
+    margin-right: -20px;
+    margin-top: -32px; /* 32px top padding */
+    margin-bottom: 20px;
+  }
+
+  .auth-title { font-size: 22px; }
+  .input-group { padding: 12px 14px; border-radius: 12px; }
+  .auth-btn { padding: 14px; font-size: 14px; border-radius: 12px; }
+}

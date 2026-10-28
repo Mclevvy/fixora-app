@@ -1,0 +1,263 @@
+/* src/pages/mechanic/MechanicProfile.css */
+
+.mech-profile { 
+  --background: linear-gradient(180deg, #f0f9ff 0%, #e0f2fe 100%);
+}
+
+/* ✅ HEADER - Pilit na Blue Gradient (Para mawala ang green) */
+.mp-header {
+  background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%) !important;
+  color: white;
+  padding: 40px 24px 30px;
+  text-align: center;
+  border-bottom-left-radius: 32px;
+  border-bottom-right-radius: 32px;
+  box-shadow: 0 10px 30px -10px rgba(37, 99, 235, 0.5);
+  position: relative;
+  overflow: hidden;
+}
+
+.mp-header::before {
+  content: '';
+  position: absolute;
+  top: -50px;
+  right: -30px;
+  width: 180px;
+  height: 180px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.mp-avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30px;
+  font-weight: 800;
+  margin: 0 auto 12px;
+  border: 3px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  position: relative;
+  z-index: 1;
+}
+
+.mp-header h1 { 
+  margin: 0; 
+  font-size: 24px; 
+  font-weight: 800; 
+  text-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+  position: relative; 
+  z-index: 1; 
+}
+
+.mp-header p { 
+  margin: 4px 0 16px; 
+  font-size: 14px; 
+  opacity: 0.9; 
+  position: relative; 
+  z-index: 1; 
+}
+
+/* STATUS SELECTOR */
+.mp-status-selector {
+  display: flex;
+  gap: 8px;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 6px;
+  border-radius: 20px;
+  margin: 16px auto 0;
+  width: fit-content;
+  backdrop-filter: blur(10px);
+  position: relative;
+  z-index: 1;
+}
+
+.mp-status-btn {
+  padding: 8px 16px;
+  border-radius: 16px;
+  border: none;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.mp-status-btn:hover { color: white; }
+.mp-status-btn.available.active { background: #0ea5e9; color: white; box-shadow: 0 4px 10px rgba(14, 165, 233, 0.3); }
+.mp-status-btn.busy.active { background: #f59e0b; color: white; box-shadow: 0 4px 10px rgba(245, 158, 11, 0.3); }
+.mp-status-btn.offline.active { background: #64748b; color: white; box-shadow: 0 4px 10px rgba(100, 116, 139, 0.3); }
+
+/* CUSTOMER PREVIEW CARD */
+.mp-card-preview {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  background: linear-gradient(145deg, #ffffff 0%, #f0f9ff 100%);
+  border-radius: 20px;
+  box-shadow: 0 8px 20px -5px rgba(14, 165, 233, 0.1);
+  border: 1px solid #e0f2fe;
+}
+
+.mp-preview-avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 16px;
+  background: #e0f2fe;
+  color: #0ea5e9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: 800;
+}
+
+.mp-preview-info h3 { margin: 0 0 4px; font-size: 16px; color: #0f172a; font-weight: 800; }
+.mp-preview-info p { margin: 0; font-size: 13px; color: #64748b; font-weight: 500; }
+
+.mp-preview-status {
+  font-size: 11px;
+  font-weight: 800;
+  padding: 6px 10px;
+  border-radius: 8px;
+  text-transform: uppercase;
+  display: inline-block;
+  margin-left: auto;
+}
+.mp-preview-status.available { background: #e0f2fe; color: #0369a1; }
+.mp-preview-status.busy { background: #fef3c7; color: #92400e; }
+.mp-preview-status.offline { background: #f1f5f9; color: #64748b; }
+
+/* SECTIONS & CARDS */
+.mp-section { padding: 24px 20px 0; }
+.mp-section h2 {
+  font-size: 13px;
+  font-weight: 800;
+  color: #64748b;
+  text-transform: uppercase;
+  margin: 0 0 10px;
+  letter-spacing: 0.5px;
+}
+
+.mp-card {
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  border-radius: 20px;
+  padding: 16px;
+  box-shadow: 0 4px 15px -3px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e2e8f0;
+}
+
+/* INPUTS */
+.mp-input {
+  border: 1.5px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 12px;
+  margin-bottom: 12px;
+  --padding-start: 12px;
+  background: white;
+}
+
+.mp-input.half { flex: 1; margin-bottom: 0; }
+.mp-time-row { display: flex; gap: 12px; margin-top: 12px; }
+
+.mp-label { font-size: 13px; color: #64748b; margin: 0 0 8px; font-weight: 600; }
+
+/* ========================================================
+   ✅ AYOS NA CHIPS (Working Days at Specializations)
+   ======================================================== */
+.mp-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+
+.mp-chip {
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  color: #475569;
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+/* 🔥 Pilit na ginagawang Blue ang active state para hindi maging green */
+.mp-chip.active,
+.mp-chip.active:hover,
+.mp-chip.active:focus {
+  background: #0ea5e9 !important;
+  color: white !important;
+  border-color: #0ea5e9 !important;
+  box-shadow: 0 4px 10px rgba(14, 165, 233, 0.3) !important;
+}
+
+.mp-chip.small { padding: 6px 12px; font-size: 11px; }
+
+/* ACTIONS */
+.mp-actions {
+  padding: 24px 20px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/*/* ========================================================
+   ✅ AYOS NA SAVE BUTTON (Wala nang green sa gilid)
+   ======================================================== */
+.mp-save { 
+  --border-radius: 16px;
+  height: 50px;
+  font-weight: 800;
+  margin: 0;
+  width: 100%;
+  
+  /* 1. Pilitin ang outer shell na maging transparent at may rounded corners */
+  background: transparent !important;
+  border-radius: 16px !important;
+  overflow: hidden !important;
+  
+  /* 2. I-override ang default green theme ng Ionic */
+  --ion-color-base: #0ea5e9;
+  --ion-color-base-rgb: 14, 165, 233;
+  --ion-color-contrast: #ffffff;
+  --ion-color-contrast-rgb: 255, 255, 255;
+  --ion-color-shade: #0284c7;
+  --ion-color-tint: #2563eb;
+}
+
+/* 3. Ilagay ang blue gradient sa loob at bigyan din ng border-radius */
+.mp-save::part(native) {
+  background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 8px 20px -5px rgba(14, 165, 233, 0.4) !important;
+}
+
+/* Para hindi mag-flash ng green kapag pinindot o hinahawakan */
+.mp-save::part(native):hover {
+  background: linear-gradient(135deg, #0284c7 0%, #1d4ed8 100%) !important;
+}
+
+.mp-save::part(native):active {
+  background: linear-gradient(135deg, #0369a1 0%, #1e40af 100%) !important;
+}
+
+.mp-actions ion-button[fill="outline"] {
+  --border-radius: 16px;
+  height: 50px;
+  font-weight: 800;
+  margin: 0;
+}
+
+.mech-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
