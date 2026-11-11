@@ -2,11 +2,13 @@
 import React, { useState, useEffect } from 'react';
 import { IonContent, IonPage, IonIcon, IonSpinner } from '@ionic/react';
 import { cashOutline, searchOutline } from 'ionicons/icons';
+import { useNavigate } from 'react-router-dom';
 import { getAllBookingsAdmin } from '../../api/firebaseService';
 import { Booking } from '../../types';
 import './Admin.css';
 
 const AdminBookings: React.FC = () => {
+  const navigate = useNavigate();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [filteredBookings, setFilteredBookings] = useState<Booking[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -40,15 +42,24 @@ const AdminBookings: React.FC = () => {
     return 'bg-yellow';
   };
 
-  const totalRevenue = bookings
+  // ✅ BINAGO: 10% Commission lang ang kukunin ni Admin
+  const adminCommission = bookings
     .filter((b) => b.paymentStatus === 'paid')
-    .reduce((sum, b) => sum + (b.price || 0), 0);
+    .reduce((sum, b) => sum + ((b.price || 0) * 0.10), 0);
 
   return (
     <IonPage>
       <IonContent className="admin-page" fullscreen>
         <div className="admin-container">
-          <div className="admin-header">
+          
+          {/* ✅ BINAGO: Cyan/Blue Gradient Header */}
+          <div 
+            className="admin-header"
+            style={{ 
+              background: 'linear-gradient(135deg, #00b4d8 0%, #06b6d4 100%)',
+              boxShadow: '0 10px 30px -10px rgba(0, 180, 216, 0.5)'
+            }}
+          >
             <h1>All Bookings</h1>
             <p>Monitor transactions platform-wide</p>
           </div>
@@ -60,8 +71,9 @@ const AdminBookings: React.FC = () => {
                 <p>Total Bookings</p>
               </div>
               <div className="admin-stat-card">
-                <h3>₱{totalRevenue.toLocaleString()}</h3>
-                <p>Total Revenue</p>
+                {/* ✅ IPINAKITA ANG 10% COMMISSION */}
+                <h3>₱{adminCommission.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</h3>
+                <p>Admin Commission (10%)</p>
               </div>
             </div>
 
@@ -95,8 +107,13 @@ const AdminBookings: React.FC = () => {
             ) : (
               <div className="admin-list-grid">
                 {filteredBookings.map((b) => (
-                  <div key={b.id} className="admin-card">
-                    <div style={{ width: 44, height: 44, borderRadius: 12, background: '#e0e7ff', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#3730a3' }}>
+                  <div 
+                    key={b.id} 
+                    className="admin-card" 
+                    onClick={() => navigate(`/admin/bookings/${b.id}`)} 
+                    style={{ cursor: 'pointer' }} 
+                  >
+                    <div style={{ width: 44, height: 44, borderRadius: 12, background: '#e0f2fe', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#0ea5e9' }}>
                       <IonIcon icon={cashOutline} style={{ fontSize: 22 }} />
                     </div>
                     <div style={{ flex: 1, minWidth: 0 }}>
@@ -108,7 +125,7 @@ const AdminBookings: React.FC = () => {
                       </p>
                     </div>
                     <div style={{ textAlign: 'right' }}>
-                      <div style={{ fontWeight: 800, color: '#1a4d3e', fontSize: 15 }}>
+                      <div style={{ fontWeight: 800, color: '#0ea5e9', fontSize: 15 }}>
                         ₱{b.price > 0 ? b.price.toLocaleString() : 'TBD'}
                       </div>
                       <span className={`admin-badge ${getStatusColor(b.status)}`} style={{ marginTop: 4, display: 'inline-block' }}>

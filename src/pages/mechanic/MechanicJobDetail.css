@@ -2,12 +2,14 @@
 
 .job-detail { --background: #f5f7f6; }
 
+/* ✅ BINAGO: Naging BLUE GRADIENT na kapareho ng ibang pages */
 .job-detail-header {
-  background: linear-gradient(135deg, #1a4d3e 0%, #2d6b56 100%);
+  background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%);
   color: white;
   padding: 40px 20px 24px;
   border-bottom-left-radius: 24px;
   border-bottom-right-radius: 24px;
+  box-shadow: 0 10px 30px -10px rgba(37, 99, 235, 0.5);
 }
 
 .header-top {
@@ -81,11 +83,12 @@
   gap: 12px;
 }
 
+/* ✅ BINAGO: Naging Blue ang avatar background */
 .job-customer-avatar {
   width: 46px;
   height: 46px;
   border-radius: 50%;
-  background: #1a4d3e;
+  background: #0ea5e9;
   color: white;
   display: flex;
   align-items: center;
@@ -99,12 +102,13 @@
 .job-customer-info h3 { margin: 0; font-size: 15px; font-weight: 700; color: #1f2937; }
 .job-customer-info p { margin: 2px 0 0; font-size: 12px; color: #6b7280; }
 
+/* ✅ BINAGO: Naging Blue ang chat button */
 .job-icon-btn {
   width: 40px;
   height: 40px;
   border-radius: 12px;
-  background: #f0fdf4;
-  color: #1a4d3e;
+  background: #e0f2fe;
+  color: #0ea5e9;
   border: none;
   display: flex;
   align-items: center;
@@ -126,8 +130,9 @@
 
 .job-info-row:last-child { margin-bottom: 0; }
 
+/* ✅ BINAGO: Naging Blue ang icons */
 .job-info-row ion-icon {
-  color: #1a4d3e;
+  color: #0ea5e9;
   font-size: 18px;
   flex-shrink: 0;
 }
@@ -147,11 +152,12 @@
   gap: 10px;
 }
 
-.job-price { font-size: 16px; font-weight: 800; color: #1a4d3e; }
+/* ✅ BINAGO: Naging Blue ang price text */
+.job-price { font-size: 16px; font-weight: 800; color: #0ea5e9; }
 
 .job-btn-set-price {
   background: #f3f4f6;
-  color: #1a4d3e;
+  color: #0ea5e9;
   border: none;
   padding: 8px 14px;
   border-radius: 10px;
@@ -199,8 +205,9 @@
 
 .job-action-btn ion-icon { font-size: 20px; }
 
-.job-action-btn.primary { background: #1a4d3e; color: white; }
-.job-action-btn.primary:hover { background: #2d6a4f; }
+/* ✅ BINAGO: Naging Blue ang primary button */
+.job-action-btn.primary { background: #0ea5e9; color: white; }
+.job-action-btn.primary:hover { background: #0284c7; }
 
 .job-action-btn.success { background: #059669; color: white; }
 .job-action-btn.success:hover { background: #047857; }

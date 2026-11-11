@@ -9,7 +9,7 @@ import {
   signInWithPopup,
   User as FirebaseUser,
 } from 'firebase/auth';
-import { doc, setDoc, getDoc } from 'firebase/firestore';
+import { doc, setDoc, getDoc, updateDoc } from 'firebase/firestore'; // ✅ IDINAGDAG ANG updateDoc
 import { auth, db } from '../firebase';
 import { User } from '../types';
 
@@ -37,16 +37,52 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
+  // ✅ BAGONG HELPER FUNCTION PARA SA SUSPEND/BLOCK CHECK
+  const validateUserStatus = async (userData: User) => {
+    const status = userData.accountStatus || (userData.isActive === false ? 'suspended' : 'active');
+    
+    if (status === 'blocked') {
+      await signOut(auth);
+      throw new Error(`Your account has been permanently blocked. Reason: ${userData.statusReason || 'Violation of terms'}`);
+    }
+    
+    if (status === 'suspended') {
+      const now = new Date();
+      const suspendUntil = userData.suspendUntil ? new Date(userData.suspendUntil) : null;
+      
+      if (suspendUntil && suspendUntil > now) {
+        await signOut(auth);
+        const dateStr = suspendUntil.toLocaleDateString();
+        throw new Error(`Your account is suspended until ${dateStr}. Reason: ${userData.statusReason}`);
+      } else {
+        // ✅ Kung tapos na ang suspension date, awtomatikong i-activate muli
+        await updateDoc(doc(db, 'users', userData.id), { 
+          accountStatus: 'active', 
+          suspendUntil: null,
+          isActive: true 
+        });
+        userData.accountStatus = 'active';
+      }
+    }
+    return userData;
+  };
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
         try {
           const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
           if (userDoc.exists()) {
-            setUser({ id: firebaseUser.uid, ...userDoc.data() } as User);
+            const userData = { id: firebaseUser.uid, ...userDoc.data() } as User;
+            // ✅ CHECK STATUS KAHIT NAKA-LOGIN NA (Halimbawa: na-block habang nagagamit ang app)
+            const validData = await validateUserStatus(userData);
+            setUser(validData);
           }
         } catch (error) {
           console.error('Error fetching user data:', error);
+          // ✅ Kapag na-block habang naka-login, pilitin mag-logout
+          setUser(null);
+          await signOut(auth);
         }
       } else {
         setUser(null);
@@ -65,8 +101,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
 
     const userData = { id: userCredential.user.uid, ...userDoc.data() } as User;
-    setUser(userData);
-    return userData;
+    
+    // ✅ CHECK STATUS BAGO PAYAGAN MAKAPASOK
+    const validData = await validateUserStatus(userData);
+    
+    setUser(validData);
+    return validData;
   };
 
   const loginWithGoogle = async (role: string = 'customer'): Promise<User> => {
@@ -84,6 +124,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     if (userDoc.exists()) {
       userData = { id: firebaseUser.uid, ...userDoc.data() } as User;
+      
+      // ✅ CHECK STATUS BAGO PAYAGAN MAKAPASOK
+      userData = await validateUserStatus(userData);
     } else {
       userData = {
         id: firebaseUser.uid,
@@ -93,6 +136,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         role: role as any,
         profileImage: firebaseUser.photoURL || undefined,
         createdAt: new Date().toISOString(),
+        isActive: true, // ✅ DEFAULT ACTIVE
+        accountStatus: 'active', // ✅ DEFAULT ACTIVE
       };
 
       await setDoc(userDocRef, userData);
@@ -133,6 +178,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       phone: formData.phone,
       role: formData.role as any,
       createdAt: new Date().toISOString(),
+      isActive: true, // ✅ DEFAULT ACTIVE
+      accountStatus: 'active', // ✅ DEFAULT ACTIVE
     };
 
     await setDoc(doc(db, 'users', uid), newUser);

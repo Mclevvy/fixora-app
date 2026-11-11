@@ -1,28 +1,16 @@
 // src/pages/mechanic/MechanicDashboard.tsx
 import React, { useEffect, useState } from 'react';
 import {
-  IonContent,
-  IonPage,
-  IonIcon,
-  IonSpinner,
-  IonRefresher,
-  IonRefresherContent,
+  IonContent, IonPage, IonIcon, IonSpinner, IonRefresher, IonRefresherContent,
 } from '@ionic/react';
 import {
-  constructOutline,
-  checkmarkDoneOutline,
-  carSportOutline,
-  arrowForwardOutline,
-  timeOutline,
-  star,
-  cashOutline,
+  constructOutline, checkmarkDoneOutline, carSportOutline, arrowForwardOutline,
+  timeOutline, star, cashOutline,
 } from 'ionicons/icons';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import {
-  subscribeToMechanicBookings,
-  subscribeToPendingBookings,
-  getMechanicProfile,
+  subscribeToMechanicBookings, subscribeToPendingBookings, getMechanicProfile,
 } from '../../api/firebaseService';
 import { Booking } from '../../types';
 import { 
@@ -61,7 +49,6 @@ const MechanicDashboard: React.FC = () => {
     });
 
     const unsub2 = subscribeToPendingBookings((data) => {
-      // ✅ FIX: Ipakita lang kung walang mechanicId (open) O kaya ikaw ang naka-assign
       const relevantPending = data.filter(b => !b.mechanicId || b.mechanicId === user.id);
       setPending(relevantPending);
     });
@@ -72,16 +59,16 @@ const MechanicDashboard: React.FC = () => {
     };
   }, [user]);
 
-  const activeJobs = myJobs.filter(
-    (b) => b.status === 'accepted' || b.status === 'in-progress'
-  );
+  const activeJobs = myJobs.filter((b) => ['accepted', 'in-progress'].includes(b.status));
   const completedJobs = myJobs.filter((b) => b.status === 'completed');
   const cancelledJobs = myJobs.filter((b) => b.status === 'cancelled');
   
   const todayStr = new Date().toISOString().split('T')[0];
+  
+  // ✅ BINAGO: 90% ng price (kung paid na) ang earnings ni Mechanic
   const todaysEarnings = completedJobs
-    .filter(b => (b.updatedAt || b.createdAt).startsWith(todayStr))
-    .reduce((sum, b) => sum + (b.price || 0), 0);
+    .filter(b => b.paymentStatus === 'paid' && (b.updatedAt || b.createdAt).startsWith(todayStr))
+    .reduce((sum, b) => sum + ((b.price || 0) * 0.90), 0);
 
   const doRefresh = (event: any) => {
     setTimeout(() => event.detail.refresher ? event.detail.complete() : event.detail.complete(), 800);
@@ -103,8 +90,9 @@ const MechanicDashboard: React.FC = () => {
   const last7Days = getLast7Days();
   
   const weeklyData = last7Days.map(dayInfo => {
-    const dayJobs = completedJobs.filter(b => (b.updatedAt || b.createdAt).startsWith(dayInfo.fullDate));
-    const dayEarnings = dayJobs.reduce((sum, b) => sum + (b.price || 0), 0);
+    // ✅ BINAGO: 90% share at paid status filter
+    const dayJobs = completedJobs.filter(b => b.paymentStatus === 'paid' && (b.updatedAt || b.createdAt).startsWith(dayInfo.fullDate));
+    const dayEarnings = dayJobs.reduce((sum, b) => sum + ((b.price || 0) * 0.90), 0);
     return {
       name: dayInfo.dayName,
       jobs: dayJobs.length,
@@ -150,14 +138,16 @@ const MechanicDashboard: React.FC = () => {
                 <span className="mech-review-count">({totalReviews} reviews)</span>
               </div>
             </div>
-
-            <div className="mech-header-extra">
-              <h2 className="mech-ready-title">Ready to Get to Work?</h2>
-              <p className="mech-ready-desc">
-                Manage your bookings, track your jobs, and keep your customers moving.
-              </p>
-            </div>
           </div>
+        </div>
+
+        <div style={{ padding: '20px 20px 0 20px', marginBottom: '-8px' }}>
+          <h2 style={{ margin: '0 0 4px 0', fontSize: '20px', fontWeight: 800, color: '#1e293b' }}>
+            Ready to Get to Work?
+          </h2>
+          <p style={{ margin: 0, fontSize: '13px', color: '#64748b', lineHeight: 1.4 }}>
+            Manage your bookings, track your jobs, and keep your customers moving.
+          </p>
         </div>
 
         <div className="mech-stats-grid">
@@ -186,8 +176,9 @@ const MechanicDashboard: React.FC = () => {
               <IonIcon icon={cashOutline} />
             </div>
             <div className="mech-stat-info">
-              <h3>₱{todaysEarnings.toLocaleString()}</h3>
-              <p>Today's Earnings</p>
+              {/* ✅ IPINAKITA ANG 90% EARNINGS PARA SA ARAW NA ITO */}
+              <h3>₱{todaysEarnings.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</h3>
+              <p>Today's Earnings (90%)</p>
             </div>
           </div>
 

@@ -1,37 +1,19 @@
 // src/pages/customer/BookingDetail.tsx
 import React, { useState, useEffect } from 'react';
 import {
-  IonContent,
-  IonPage,
-  IonIcon,
-  IonSpinner,
-  IonAlert,
-  IonToast,
-  IonRefresher,
-  IonRefresherContent,
-  IonModal, // ✅ IDINAGDAG PARA SA MODAL
+  IonContent, IonPage, IonIcon, IonSpinner, IonAlert, IonToast,
+  IonRefresher, IonRefresherContent, IonModal, 
 } from '@ionic/react';
 import {
-  arrowBackOutline,
-  constructOutline,
-  carSportOutline,
-  documentTextOutline,
-  locationOutline,
-  timeOutline,
-  cardOutline,
-  starOutline,
-  closeOutline,
-  navigateOutline,
-  checkmarkCircleOutline,
-  alertCircleOutline,
-  hourglassOutline,
+  arrowBackOutline, constructOutline, carSportOutline, documentTextOutline,
+  locationOutline, timeOutline, cardOutline, starOutline, closeOutline,
+  navigateOutline, checkmarkCircleOutline, alertCircleOutline, hourglassOutline,
+  printOutline, receiptOutline // ✅ IDINAGDAG PARA SA RECEIPT
 } from 'ionicons/icons';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import {
-  getCustomerBookings,
-  updateBookingStatus,
-  markBookingAsPaid,
+  getCustomerBookings, updateBookingStatus, markBookingAsPaid, getUserProfile,
 } from '../../api/firebaseService';
 import { Booking, BookingStatus } from '../../types';
 import InteractiveMap from '../../components/InteractiveMap';
@@ -49,8 +31,13 @@ const BookingDetail: React.FC = () => {
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   const [toastColor, setToastColor] = useState('danger');
+  
+  const [mechanicImage, setMechanicImage] = useState<string | null>(null);
 
-  // ✅ BAGONG STATES PARA SA CUSTOM CARD MODAL
+  // ✅ BAGONG STATE PARA SA RECEIPT MODAL
+  const [showReceipt, setShowReceipt] = useState(false);
+
+  // Custom Card Modal States
   const [showCardModal, setShowCardModal] = useState(false);
   const [cardNumber, setCardNumber] = useState('');
   const [isProcessingCard, setIsProcessingCard] = useState(false);
@@ -67,6 +54,12 @@ const BookingDetail: React.FC = () => {
       const found = bookings.find((b) => b.id === bookingId);
       if (found) {
         setBooking(found);
+        if (found.mechanicId) {
+          const profile = await getUserProfile(found.mechanicId);
+          if (profile && profile.profileImage) {
+            setMechanicImage(profile.profileImage);
+          }
+        }
       } else {
         setToastMessage('Booking not found');
         setToastColor('danger');
@@ -105,6 +98,7 @@ const BookingDetail: React.FC = () => {
       setToastColor('success');
       setShowToast(true);
       await loadBooking();
+      setShowReceipt(true); // ✅ BUBUKAS ANG RECEIPT PAGKATAPOS MAGBAYAD
     } catch (e) {
       console.error(e);
       setToastMessage('Payment recorded but save failed.');
@@ -113,7 +107,6 @@ const BookingDetail: React.FC = () => {
     }
   };
 
-  // ✅ BAGONG FUNCTION: Para sa Custom Card (Kahit anong number tatanggapin)
   const handleCustomCardPay = async () => {
     if (cardNumber.length < 5) {
       setToastMessage('Please enter any card number');
@@ -134,25 +127,21 @@ const BookingDetail: React.FC = () => {
         setToastColor('success');
         setShowToast(true);
         await loadBooking();
+        setShowReceipt(true); // ✅ BUBUKAS ANG RECEIPT PAGKATAPOS MAGBAYAD
       } catch (e) {
         console.error(e);
       } finally {
         setIsProcessingCard(false);
       }
-    }, 1500); // 1.5 seconds fake loading para magmukhang totoo
+    }, 1500); 
   };
 
   const formatDate = (iso: string) => {
     try {
       const date = new Date(iso);
       return date.toLocaleString('en-US', {
-        weekday: 'short',
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric',
-        hour: 'numeric',
-        minute: '2-digit',
-        hour12: true,
+        weekday: 'short', month: 'short', day: 'numeric', year: 'numeric',
+        hour: 'numeric', minute: '2-digit', hour12: true,
       });
     } catch {
       return 'N/A';
@@ -174,13 +163,16 @@ const BookingDetail: React.FC = () => {
     loadBooking().finally(() => event.detail.complete());
   };
 
+  // ✅ FUNCTION PARA SA PAG-PRINT NG RECEIPT
+  const handlePrintReceipt = () => {
+    window.print();
+  };
+
   if (isLoading) {
     return (
       <IonPage>
         <IonContent className="detail-page" fullscreen>
-          <div className="detail-center">
-            <IonSpinner name="crescent" />
-          </div>
+          <div className="detail-center"><IonSpinner name="crescent" /></div>
         </IonContent>
       </IonPage>
     );
@@ -229,12 +221,10 @@ const BookingDetail: React.FC = () => {
               <button className="back-btn-detail" onClick={() => navigate('/customer/bookings')}>
                 <IonIcon icon={arrowBackOutline} />
               </button>
-              
               <div className="detail-header-title">
                 <h1>{booking.serviceType === 'repair' ? 'Repair Service' : 'Roadside Assistance'}</h1>
                 <p>Booking #{booking.id.slice(0, 8).toUpperCase()}</p>
               </div>
-
               <span className={`detail-status-badge ${booking.status}`}>
                 {getStatusLabel(booking.status)}
               </span>
@@ -276,28 +266,32 @@ const BookingDetail: React.FC = () => {
                   )}
                 </div>
 
-                {/* ✅ PAYPAL BUTTONS (HINDI GINALAW) */}
+                {/* ✅ BAGONG "VIEW RECEIPT" BUTTON KAPAG BAYAD NA */}
+                {isPaid && (
+                  <button 
+                    onClick={() => setShowReceipt(true)}
+                    style={{ 
+                      width: '100%', marginTop: '12px', padding: '12px', background: '#f0f9ff', 
+                      color: '#0ea5e9', border: '1px solid #bae6fd', borderRadius: '12px', 
+                      fontWeight: 700, fontSize: '14px', display: 'flex', justifyContent: 'center', 
+                      alignItems: 'center', gap: '8px', cursor: 'pointer' 
+                    }}
+                  >
+                    <IonIcon icon={receiptOutline} style={{ fontSize: '18px' }} />
+                    View Receipt
+                  </button>
+                )}
+
+                {/* PAYPAL BUTTONS */}
                 {canPay && (
                   <div className="paypal-button-wrapper">
-                    <PayPalScriptProvider options={{ 
-                      clientId: "test",
-                      currency: "PHP",
-                      disableFunding: "card" // ✅ Tinatago ang default Card button ni PayPal para hindi dalawa
-                    }}>
+                    <PayPalScriptProvider options={{ clientId: "test", currency: "PHP", disableFunding: "card" }}>
                       <PayPalButtons
                         style={{ layout: "vertical", shape: "rect", color: "blue", label: "pay" }}
                         createOrder={(data, actions) => {
                           return actions.order.create({
                             intent: "CAPTURE",
-                            purchase_units: [
-                              {
-                                amount: {
-                                  currency_code: "PHP",
-                                  value: booking.price.toString(),
-                                },
-                                description: `Fixora Booking #${booking.id.slice(0, 8)}`,
-                              },
-                            ],
+                            purchase_units: [{ amount: { currency_code: "PHP", value: booking.price.toString() }, description: `Fixora Booking #${booking.id.slice(0, 8)}` }],
                           });
                         }}
                         onApprove={async (data, actions) => {
@@ -315,10 +309,8 @@ const BookingDetail: React.FC = () => {
                       />
                     </PayPalScriptProvider>
 
-                    {/* ✅ CUSTOM CARD BUTTON (Bago) */}
                     <button className="custom-card-btn" onClick={() => setShowCardModal(true)}>
-                      <IonIcon icon={cardOutline} />
-                      Debit or Credit Card
+                      <IonIcon icon={cardOutline} /> Debit or Credit Card
                     </button>
                   </div>
                 )}
@@ -337,7 +329,12 @@ const BookingDetail: React.FC = () => {
               <div className="detail-section">
                 <h2 className="detail-section-title">Assigned Mechanic</h2>
                 <div className="mechanic-card-detail">
-                  <img src="https://ionicframework.com/docs/img/demos/avatar.svg" alt={booking.mechanicName} className="mechanic-avatar-detail" />
+                  <img 
+                    src={mechanicImage || "https://ionicframework.com/docs/img/demos/avatar.svg"} 
+                    alt={booking.mechanicName} 
+                    className="mechanic-avatar-detail" 
+                    style={{ objectFit: 'cover' }}
+                  />
                   <div className="mechanic-info-detail">
                     <h3>{booking.mechanicName}</h3>
                     <p>Assigned to your booking</p>
@@ -356,7 +353,7 @@ const BookingDetail: React.FC = () => {
               </div>
             )}
 
-            {/* SERVICE DETAILS, VEHICLE, LOCATION (Walang binago) */}
+            {/* SERVICE DETAILS, VEHICLE, LOCATION */}
             <div className="detail-section">
               <h2 className="detail-section-title">Service Details</h2>
               <div className="detail-card">
@@ -460,24 +457,12 @@ const BookingDetail: React.FC = () => {
             
             <div className="card-input-group">
               <label>Card Number</label>
-              <input 
-                type="text" 
-                placeholder="1234 5678 9012 3456" 
-                maxLength={19}
-                value={cardNumber}
-                onChange={(e) => setCardNumber(e.target.value)}
-              />
+              <input type="text" placeholder="1234 5678 9012 3456" maxLength={19} value={cardNumber} onChange={(e) => setCardNumber(e.target.value)} />
             </div>
             
             <div className="card-row">
-              <div className="card-input-group">
-                <label>Expiry</label>
-                <input type="text" placeholder="MM/YY" maxLength={5} />
-              </div>
-              <div className="card-input-group">
-                <label>CVV</label>
-                <input type="text" placeholder="123" maxLength={4} />
-              </div>
+              <div className="card-input-group"><label>Expiry</label><input type="text" placeholder="MM/YY" maxLength={5} /></div>
+              <div className="card-input-group"><label>CVV</label><input type="text" placeholder="123" maxLength={4} /></div>
             </div>
 
             <button className="card-pay-btn" onClick={handleCustomCardPay} disabled={isProcessingCard}>
@@ -486,24 +471,81 @@ const BookingDetail: React.FC = () => {
           </div>
         </IonModal>
 
+        {/* ✅ BAGONG DAGDAG: RECEIPT MODAL */}
+        <IonModal isOpen={showReceipt} onDidDismiss={() => setShowReceipt(false)} style={{ '--border-radius': '24px' }}>
+          <div style={{ padding: '24px', background: '#ffffff', height: '100%', display: 'flex', flexDirection: 'column' }}>
+            
+            {/* Receipt Header */}
+            <div style={{ textAlign: 'center', marginBottom: '24px' }}>
+              <div style={{ width: '60px', height: '60px', background: '#e0f2fe', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
+                <IonIcon icon={checkmarkCircleOutline} style={{ fontSize: '32px', color: '#0ea5e9' }} />
+              </div>
+              <h2 style={{ margin: 0, fontSize: '20px', fontWeight: 800, color: '#0f172a' }}>Payment Successful</h2>
+              <p style={{ margin: '4px 0 0 0', fontSize: '13px', color: '#64748b' }}>Receipt #{booking.transactionId || 'N/A'}</p>
+            </div>
+
+            {/* Amount */}
+            <div style={{ textAlign: 'center', marginBottom: '24px' }}>
+              <p style={{ margin: 0, fontSize: '14px', color: '#64748b', fontWeight: 600 }}>Total Paid</p>
+              <h1 style={{ margin: '4px 0 0 0', fontSize: '36px', fontWeight: 900, color: '#0ea5e9' }}>
+                ₱{booking.price.toLocaleString()}
+              </h1>
+            </div>
+
+            <div style={{ height: '1px', borderBottom: '1px dashed #cbd5e1', margin: '0 0 24px 0' }}></div>
+
+            {/* Details */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', flex: 1 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ fontSize: '13px', color: '#64748b' }}>Customer</span>
+                <span style={{ fontSize: '14px', fontWeight: 700, color: '#0f172a' }}>{booking.customerName}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ fontSize: '13px', color: '#64748b' }}>Mechanic</span>
+                <span style={{ fontSize: '14px', fontWeight: 700, color: '#0f172a' }}>{booking.mechanicName || 'N/A'}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ fontSize: '13px', color: '#64748b' }}>Service</span>
+                <span style={{ fontSize: '14px', fontWeight: 700, color: '#0f172a' }}>{booking.serviceType === 'repair' ? 'Repair Service' : 'Roadside Assistance'}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ fontSize: '13px', color: '#64748b' }}>Date & Time</span>
+                <span style={{ fontSize: '14px', fontWeight: 700, color: '#0f172a' }}>{formatDate(booking.paidAt || new Date().toISOString())}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ fontSize: '13px', color: '#64748b' }}>Payment Method</span>
+                <span style={{ fontSize: '14px', fontWeight: 700, color: '#0f172a', textTransform: 'uppercase' }}>{booking.paymentMethod || 'Card'}</span>
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div style={{ marginTop: '24px', display: 'flex', gap: '12px' }}>
+              <button 
+                onClick={() => setShowReceipt(false)} 
+                style={{ flex: 1, padding: '14px', background: '#f1f5f9', color: '#475569', border: 'none', borderRadius: '12px', fontWeight: 700, cursor: 'pointer' }}
+              >
+                Close
+              </button>
+              <button 
+                onClick={handlePrintReceipt} 
+                style={{ flex: 1, padding: '14px', background: '#0ea5e9', color: 'white', border: 'none', borderRadius: '12px', fontWeight: 700, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', cursor: 'pointer' }}
+              >
+                <IonIcon icon={printOutline} style={{ fontSize: '18px' }} /> Print
+              </button>
+            </div>
+
+          </div>
+        </IonModal>
+
         <IonAlert
           isOpen={showCancelAlert}
           onDidDismiss={() => setShowCancelAlert(false)}
           header="Cancel Booking"
           message="Are you sure you want to cancel this booking? This cannot be undone."
-          buttons={[
-            { text: 'No', role: 'cancel' },
-            { text: 'Yes, Cancel', role: 'destructive', handler: handleCancel },
-          ]}
+          buttons={[{ text: 'No', role: 'cancel' }, { text: 'Yes, Cancel', role: 'destructive', handler: handleCancel }]}
         />
 
-        <IonToast
-          isOpen={showToast}
-          onDidDismiss={() => setShowToast(false)}
-          message={toastMessage}
-          duration={2500}
-          color={toastColor}
-        />
+        <IonToast isOpen={showToast} onDidDismiss={() => setShowToast(false)} message={toastMessage} duration={2500} color={toastColor} />
       </IonContent>
     </IonPage>
   );

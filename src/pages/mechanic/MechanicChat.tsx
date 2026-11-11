@@ -67,7 +67,7 @@ const MechanicChat: React.FC = () => {
     try {
       await sendChatMessage({
         senderId: user.id,
-        receiverId: booking.customerId, // ✅ Ipinapadala sa Customer ID
+        receiverId: booking.customerId,
         bookingId: booking.id,
         message: messageText,
         timestamp: new Date().toISOString(),
@@ -111,11 +111,15 @@ const MechanicChat: React.FC = () => {
             >
               <IonIcon icon={arrowBackOutline} />
             </button>
+            
+            {/* ✅ BINAGO: Gumagamit na ng customerProfileImage */}
             <img
-              src="https://ionicframework.com/docs/img/demos/avatar.svg"
+              src={booking?.customerProfileImage || "https://ionicframework.com/docs/img/demos/avatar.svg"}
               alt="Customer"
               className="chat-room-avatar"
+              style={{ objectFit: 'cover' }}
             />
+
             <div className="chat-room-info">
               <h3>{booking?.customerName || 'Customer'}</h3>
               <div className="chat-room-status">
@@ -148,10 +152,12 @@ const MechanicChat: React.FC = () => {
                     className={`message-row ${isOwn ? 'own' : ''}`}
                   >
                     {!isOwn && (
+                      // ✅ BINAGO: Gumagamit na ng customerProfileImage
                       <img
-                        src="https://ionicframework.com/docs/img/demos/avatar.svg"
+                        src={booking?.customerProfileImage || "https://ionicframework.com/docs/img/demos/avatar.svg"}
                         alt="Avatar"
                         className="message-avatar"
+                        style={{ objectFit: 'cover' }}
                       />
                     )}
                     <div className="message-bubble">

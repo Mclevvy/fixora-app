@@ -21,13 +21,13 @@
    HEADER (Blue Gradient)
    ============================ */
 .profile-header {
-  background: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 100%);
+  background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%); /* Forced Blue */
   color: white;
   padding: 40px 16px 30px;
   text-align: center;
   border-bottom-left-radius: 28px;
   border-bottom-right-radius: 28px;
-  box-shadow: 0 10px 30px -10px rgba(14, 165, 233, 0.3);
+  box-shadow: 0 10px 30px -10px rgba(37, 99, 235, 0.5);
 }
 
 .profile-avatar {
@@ -244,7 +244,6 @@
   margin-bottom: 4px;
 }
 
-/* ✅ IN-UPDATE PARA MAGING KAPAREHAS NG HISTORY-SUBTITLE (HINDI BOLD) */
 .profile-sublabel {
   font-size: 12px;
   font-weight: 400;
@@ -254,7 +253,6 @@
   margin: 0;
 }
 
-/* ✅ IN-UPDATE PARA MAGING KAPAREHAS NG HISTORY-TITLE (BOLD, 14PX) */
 .profile-value {
   font-size: 14px;
   color: #0f172a;
@@ -290,14 +288,14 @@
   height: 44px;
   min-width: 44px;
   border-radius: 12px;
-  background: linear-gradient(135deg, #0ea5e9, #3b82f6); /* Blue Gradient */
+  background: linear-gradient(135deg, #0ea5e9, #2563eb); /* Blue Gradient */
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 22px;
   flex-shrink: 0;
-  box-shadow: 0 4px 10px rgba(14, 165, 233, 0.3);
+  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
 }
 
 .vehicle-meta {
@@ -571,9 +569,9 @@
 }
 
 .modal-btn.primary {
-  background: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 100%); /* Blue gradient */
+  background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%); /* Blue gradient */
   color: white;
-  box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
 }
 
 .modal-btn.primary:disabled {
@@ -607,4 +605,3 @@
   .stats-row { padding: 0 60px; }
   .profile-header { padding: 60px 60px 50px; }
 }
-

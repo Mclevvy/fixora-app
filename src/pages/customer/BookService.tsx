@@ -1,10 +1,11 @@
 // src/pages/customer/BookService.tsx
 import React, { useState, useEffect } from 'react';
 import {
-  IonContent, IonPage, IonIcon, IonLoading, IonToast, IonSpinner, IonModal, IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonFooter, useIonRouter,
+  IonContent, IonPage, IonIcon, IonLoading, IonToast, IonSpinner, IonModal, useIonRouter,
 } from '@ionic/react';
 import {
   constructOutline, carSportOutline, documentTextOutline, locationOutline, addOutline, navigateOutline, closeOutline,
+  carOutline, calendarOutline, textOutline, colorPaletteOutline // 👈 IDINAGDAG NA ICONS
 } from 'ionicons/icons';
 import { useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
@@ -190,6 +191,10 @@ const BookService: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (mechanic && mechanic.status !== 'available') {
+      return showMessage('This mechanic is currently offline and cannot accept bookings.', 'danger');
+    }
+
     if (!selectedVehicleId) return showMessage('Please select a vehicle', 'danger');
     if (mechanic && mechanic.services && mechanic.services.length > 0 && !selectedService) return showMessage('Please select a service', 'danger');
     if (!locationAddress.trim()) return showMessage('Please set your location', 'danger');
@@ -201,7 +206,11 @@ const BookService: React.FC = () => {
     setIsLoading(true);
     try {
       const bookingData: any = {
-        customerId: user.id, customerName: user.fullName, customerPhone: user.phone, serviceType,
+        customerId: user.id, 
+        customerName: user.fullName, 
+        customerPhone: user.phone, 
+        customerProfileImage: user.profileImage || '', 
+        serviceType,
         serviceName: selectedService ? selectedService.name : 'General Service',
         vehicle, issueDescription: issueDescription.trim() || 'No additional notes',
         location: { latitude, longitude, address: locationAddress.trim() }, status: 'pending',
@@ -231,7 +240,6 @@ const BookService: React.FC = () => {
       <IonContent className="book-page" fullscreen>
         <div className="book-container">
           
-          {/* ✅ INALIS ANG BACK BUTTON PARA TUMAAS ANG DESIGN AT TUMAYSA SCREENSHOT */}
           <div className="book-header" style={{ marginBottom: '20px' }}>
             <h1 style={{ margin: 0, fontSize: '24px', fontWeight: 'bold' }}>Book a Service</h1>
             <p style={{ margin: '4px 0 0 0', color: '#64748b' }}>
@@ -239,13 +247,11 @@ const BookService: React.FC = () => {
             </p>
           </div>
 
-          {/* ✅ INALIS ANG "SELECTED SERVICE" BLOCK DAHIL NANDOON NA YUN SA SCREENSHOT */}
-
           <div className="form-section">
             <label className="form-label">SERVICE TYPE</label>
             <div className="service-types">
               <div className={`service-type-card ${serviceType === 'repair' ? 'active' : ''}`} onClick={() => setServiceType('repair')}>
-                <IonIcon icon={constructOutline} /><span>Repair</span>
+                <IonIcon icon={constructOutline} /><span>Home Repair</span>
               </div>
               <div className={`service-type-card ${serviceType === 'roadside' ? 'active' : ''}`} onClick={() => setServiceType('roadside')}>
                 <IonIcon icon={carSportOutline} /><span>Roadside Assistance</span>
@@ -295,9 +301,8 @@ const BookService: React.FC = () => {
                 <input type="text" placeholder="Enter your current address" value={locationAddress} onChange={(e) => setLocationAddress(e.target.value)} />
               )}
             </div>
-            {/* Siguraduhin na may fix na tayo sa InteractiveMap para hindi mag-white screen kapag umaandar ito */}
             <InteractiveMap latitude={latitude} longitude={longitude} onLocationChange={handleMapLocationChange} draggable={true} height="260px" zoom={16} />
-            <p className="map-hint">💡 I-drag ang pin o i-tap ang mapa para baguhin ang lokasyon</p>
+            
             <button type="button" className="location-btn" onClick={getCurrentLocation} disabled={isLocating}>
               {isLocating ? <IonSpinner name="crescent" /> : <IonIcon icon={navigateOutline} />}
               {isLocating ? 'Getting location...' : 'Use My Current Location'}
@@ -309,17 +314,67 @@ const BookService: React.FC = () => {
           </button>
         </div>
 
-        {/* MODAL */}
+        {/* ✅ BAGONG MODAL DESIGN (Walang Ionic Header, may icons) */}
         <IonModal isOpen={showVehicleModal} onDidDismiss={() => setShowVehicleModal(false)}>
-          <IonHeader><IonToolbar color="primary"><IonTitle>Add New Vehicle</IonTitle><IonButtons slot="end"><IonButton onClick={() => setShowVehicleModal(false)}><IonIcon icon={closeOutline} style={{ fontSize: '22px' }} /></IonButton></IonButtons></IonToolbar></IonHeader>
           <IonContent className="vehicle-modal-content">
-            <div className="vehicle-form-field"><label>Brand / Make</label><input type="text" placeholder="e.g., Toyota" value={newMake} onChange={(e) => setNewMake(e.target.value)} /></div>
-            <div className="vehicle-form-field"><label>Model</label><input type="text" placeholder="e.g., Vios" value={newModel} onChange={(e) => setNewModel(e.target.value)} /></div>
-            <div className="vehicle-form-field"><label>Year</label><input type="number" placeholder="e.g., 2020" value={newYear} onChange={(e) => setNewYear(e.target.value)} /></div>
-            <div className="vehicle-form-field"><label>Plate Number</label><input type="text" placeholder="e.g., ABC 123" value={newPlate} onChange={(e) => setNewPlate(e.target.value)} /></div>
-            <div className="vehicle-form-field"><label>Color</label><input type="text" placeholder="e.g., White" value={newColor} onChange={(e) => setNewColor(e.target.value)} /></div>
+            
+            <div className="vehicle-modal-header">
+              <h2>Add New Vehicle</h2>
+              <button className="vehicle-modal-close" onClick={() => setShowVehicleModal(false)}>
+                <IonIcon icon={closeOutline} />
+              </button>
+            </div>
+            
+            <p className="vehicle-modal-subtitle">Enter your vehicle details below.</p>
+
+            <div className="vehicle-form-field">
+              <label>Brand / Make</label>
+              <div className="vehicle-input-wrapper">
+                <IonIcon icon={carOutline} />
+                <input type="text" placeholder="e.g., Toyota" value={newMake} onChange={(e) => setNewMake(e.target.value)} />
+              </div>
+            </div>
+
+            <div className="vehicle-form-field">
+              <label>Model</label>
+              <div className="vehicle-input-wrapper">
+                <IonIcon icon={carOutline} />
+                <input type="text" placeholder="e.g., Vios" value={newModel} onChange={(e) => setNewModel(e.target.value)} />
+              </div>
+            </div>
+
+            <div className="vehicle-form-field">
+              <label>Year</label>
+              <div className="vehicle-input-wrapper">
+                <IonIcon icon={calendarOutline} />
+                <input type="number" placeholder="e.g., 2020" value={newYear} onChange={(e) => setNewYear(e.target.value)} />
+              </div>
+            </div>
+
+            <div className="vehicle-form-field">
+              <label>Plate Number</label>
+              <div className="vehicle-input-wrapper">
+                <IonIcon icon={textOutline} />
+                <input type="text" placeholder="e.g., ABC 123" value={newPlate} onChange={(e) => setNewPlate(e.target.value)} />
+              </div>
+            </div>
+
+            <div className="vehicle-form-field">
+              <label>Color</label>
+              <div className="vehicle-input-wrapper">
+                <IonIcon icon={colorPaletteOutline} />
+                <input type="text" placeholder="e.g., White" value={newColor} onChange={(e) => setNewColor(e.target.value)} />
+              </div>
+            </div>
+
+            <button className="vehicle-modal-btn primary" onClick={handleSaveNewVehicle} disabled={isSavingVehicle}>
+              {isSavingVehicle ? 'Saving...' : 'Save Vehicle'}
+            </button>
+            <button className="vehicle-modal-btn secondary" onClick={() => setShowVehicleModal(false)}>
+              Cancel
+            </button>
+
           </IonContent>
-          <IonFooter><div style={{ padding: '12px 16px', background: 'var(--soft-bg)' }}><button className="vehicle-modal-btn primary" onClick={handleSaveNewVehicle} disabled={isSavingVehicle}>{isSavingVehicle ? 'Saving...' : 'Save Vehicle'}</button><button className="vehicle-modal-btn secondary" onClick={() => setShowVehicleModal(false)}>Cancel</button></div></IonFooter>
         </IonModal>
 
         <IonLoading isOpen={isLoading} message="Creating booking..." />

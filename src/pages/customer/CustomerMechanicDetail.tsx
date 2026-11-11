@@ -4,7 +4,7 @@ import {
   IonContent, IonPage, IonIcon, IonSpinner, IonButton, IonToast, useIonRouter,
 } from '@ionic/react';
 import {
-  arrowBackOutline, star, locationOutline, constructOutline, checkmarkCircle,
+  arrowBackOutline, star, locationOutline, constructOutline, checkmarkCircle, timeOutline,
 } from 'ionicons/icons';
 import { useParams } from 'react-router-dom';
 import { getAllMechanics } from '../../api/firebaseService';
@@ -20,6 +20,9 @@ const CustomerMechanicDetail: React.FC = () => {
   const [distance, setDistance] = useState<string | null>(null);
   const [selectedService, setSelectedService] = useState<ServiceItem | null>(null);
   const [showToast, setShowToast] = useState(false);
+  
+  const [toastMessage, setToastMessage] = useState('');
+  const [toastColor, setToastColor] = useState('warning');
 
   useEffect(() => {
     const fetchMechanic = async () => {
@@ -55,18 +58,35 @@ const CustomerMechanicDetail: React.FC = () => {
   }, [mechanicId]);
 
   const handleBookNow = () => {
-    if (!selectedService || !mechanic) {
+    // ✅ CHECK KUNG NAKA-SUSPEND O BLOCKED
+    if (mechanic?.accountStatus === 'suspended' || mechanic?.accountStatus === 'blocked') {
+      setToastMessage(`This mechanic's account is currently ${mechanic.accountStatus}.`);
+      setToastColor('danger');
       setShowToast(true);
       return;
     }
+
+    if (mechanic?.status !== 'available') {
+      setToastMessage('This mechanic is currently offline or busy. You cannot book right now.');
+      setToastColor('danger');
+      setShowToast(true);
+      return;
+    }
+
+    if (!selectedService || !mechanic) {
+      setToastMessage('Please select a service first.');
+      setToastColor('warning');
+      setShowToast(true);
+      return;
+    }
+    
     router.push(`/customer/book?mechanic=${mechanic.id}&serviceId=${selectedService.id}`, 'forward', 'push');
   };
 
-  /// ✅ Idinagdag lang ang blur() para mawala ang "Blocked aria-hidden" warning
-const handleBackToHome = () => {
-  (document.activeElement as HTMLElement | null)?.blur();
-  router.push('/customer/home', 'root', 'replace');
-};
+  const handleBackToHome = () => {
+    (document.activeElement as HTMLElement | null)?.blur();
+    router.push('/customer/home', 'root', 'replace');
+  };
 
   if (isLoading) {
     return (
@@ -116,28 +136,63 @@ const handleBackToHome = () => {
                   <span>{distance ? `${distance} km away` : 'Distance unknown'}</span>
                 </div>
               </div>
-              <div className={`status-badge ${mechanic.status}`}>{mechanic.status.toUpperCase()}</div>
+              
+              {/* ✅ BAGONG DAGDAG: STATUS AT MODERATION BADGES */}
+              <div style={{ display: 'flex', gap: '8px', marginTop: '8px', justifyContent: 'center', flexWrap: 'wrap' }}>
+                <div className={`status-badge ${mechanic.status}`}>{mechanic.status.toUpperCase()}</div>
+                {mechanic.accountStatus && mechanic.accountStatus !== 'active' && (
+                  <div style={{ 
+                    background: mechanic.accountStatus === 'blocked' ? '#fee2e2' : '#fef3c7', 
+                    color: mechanic.accountStatus === 'blocked' ? '#991b1b' : '#92400e', 
+                    padding: '4px 12px', borderRadius: '20px', fontSize: '11px', fontWeight: 800 
+                  }}>
+                    {mechanic.accountStatus.toUpperCase()}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
           <div className="detail-section">
             <h2 className="detail-section-title">Select a Service</h2>
             {mechanic.services && mechanic.services.length > 0 ? (
-              <div className="services-list">
+              <div className="detail-card" style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 {mechanic.services.map((service) => {
                   const isSelected = selectedService?.id === service.id;
                   return (
-                    <div key={service.id} className={`service-item ${isSelected ? 'active' : ''}`} onClick={() => setSelectedService(service)}>
-                      <div className="service-icon"><IonIcon icon={constructOutline} /></div>
-                      <div className="service-info">
-                        <h3>{service.name}</h3>
-                        <p>Fixed Price</p>
-                      </div>
+                    <label 
+                      key={service.id} 
+                      style={{ 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        justifyContent: 'space-between', 
+                        padding: '14px', 
+                        border: isSelected ? '2px solid #0ea5e9' : '1px solid #e5e7eb', 
+                        borderRadius: '12px', 
+                        cursor: 'pointer',
+                        background: isSelected ? '#f0f9ff' : '#ffffff',
+                        transition: 'all 0.2s ease',
+                        opacity: (mechanic.status !== 'available' || mechanic.accountStatus === 'suspended' || mechanic.accountStatus === 'blocked') ? 0.6 : 1 
+                      }}
+                    >
                       <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                        <div className="service-price">₱{service.price}</div>
-                        {isSelected && (<IonIcon icon={checkmarkCircle} style={{ color: '#0ea5e9', fontSize: '24px' }} />)}
+                        <input
+                          type="radio"
+                          name="serviceSelection"
+                          checked={isSelected}
+                          onChange={() => setSelectedService(service)}
+                          disabled={mechanic.status !== 'available' || mechanic.accountStatus === 'suspended' || mechanic.accountStatus === 'blocked'} 
+                          style={{ width: '20px', height: '20px', accentColor: '#0ea5e9', cursor: 'pointer' }}
+                        />
+                        <div>
+                          <h3 style={{ margin: 0, fontSize: '15px', fontWeight: 700, color: '#1f2937' }}>{service.name}</h3>
+                          <p style={{ margin: '2px 0 0', fontSize: '12px', color: '#6b7280' }}>Fixed Price</p>
+                        </div>
                       </div>
-                    </div>
+                      <div style={{ fontSize: '16px', fontWeight: '800', color: '#0ea5e9' }}>
+                        ₱{service.price}
+                      </div>
+                    </label>
                   );
                 })}
               </div>
@@ -145,6 +200,42 @@ const handleBackToHome = () => {
               <div className="empty-card"><p>No services listed yet.</p></div>
             )}
           </div>
+
+          {mechanic.schedule && (
+            <div className="detail-section">
+              <h2 className="detail-section-title">Work Schedule</h2>
+              <div className="detail-card" style={{ padding: '16px' }}>
+                <p style={{ margin: '0 0 8px 0', fontSize: '13px', fontWeight: 600, color: '#64748b' }}>Working Days</p>
+                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '16px' }}>
+                  {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(day => {
+                    const isActive = mechanic.schedule?.days?.includes(day);
+                    return (
+                      <span key={day} style={{
+                        padding: '6px 12px',
+                        borderRadius: '20px',
+                        fontSize: '12px',
+                        fontWeight: '700',
+                        background: isActive ? '#0ea5e9' : '#f1f5f9',
+                        color: isActive ? 'white' : '#94a3b8',
+                      }}>
+                        {day}
+                      </span>
+                    );
+                  })}
+                </div>
+                <div style={{ display: 'flex', gap: '16px', borderTop: '1px solid #f1f5f9', paddingTop: '12px' }}>
+                  <div style={{ flex: 1 }}>
+                    <p style={{ margin: 0, fontSize: '11px', color: '#64748b', fontWeight: 600, textTransform: 'uppercase' }}>Start Time</p>
+                    <p style={{ margin: '2px 0 0', fontSize: '14px', fontWeight: 700, color: '#1f2937' }}>{mechanic.schedule.startTime || 'N/A'}</p>
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <p style={{ margin: 0, fontSize: '11px', fontWeight: 600, color: '#64748b', textTransform: 'uppercase' }}>End Time</p>
+                    <p style={{ margin: '2px 0 0', fontSize: '14px', fontWeight: 700, color: '#1f2937' }}>{mechanic.schedule.endTime || 'N/A'}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
 
           {mechanic.location && 
            typeof mechanic.location.latitude === 'number' && 
@@ -161,8 +252,19 @@ const handleBackToHome = () => {
           )}
 
           <div className="detail-actions">
-            <button className="book-now-btn-full" onClick={handleBookNow} style={{ opacity: !selectedService ? 0.7 : 1 }}>
-              {mechanic.status !== 'available' ? 'Currently Offline' : !selectedService ? 'Select a Service First' : 'Book Now'}
+            <button 
+              className="book-now-btn-full" 
+              onClick={handleBookNow} 
+              style={{ 
+                opacity: (mechanic.accountStatus === 'suspended' || mechanic.accountStatus === 'blocked' || mechanic.status !== 'available') ? 0.6 : (!selectedService ? 0.7 : 1),
+                cursor: (mechanic.accountStatus === 'suspended' || mechanic.accountStatus === 'blocked' || mechanic.status !== 'available') ? 'not-allowed' : 'pointer'
+              }}
+            >
+              {/* ✅ DYNAMIC BUTTON TEXT */}
+              {mechanic.accountStatus === 'blocked' ? 'Account Blocked' : 
+               mechanic.accountStatus === 'suspended' ? 'Account Suspended' : 
+               mechanic.status !== 'available' ? 'Currently Offline' : 
+               !selectedService ? 'Select a Service First' : 'Book Now'}
             </button>
           </div>
         </div>
@@ -170,9 +272,9 @@ const handleBackToHome = () => {
         <IonToast
           isOpen={showToast}
           onDidDismiss={() => setShowToast(false)}
-          message="Please select a service first."
-          duration={2000}
-          color="warning"
+          message={toastMessage}
+          duration={2500}
+          color={toastColor}
         />
       </IonContent>
     </IonPage>

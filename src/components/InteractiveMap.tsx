@@ -1,7 +1,7 @@
 // src/components/InteractiveMap.tsx
 import React, { useEffect } from 'react';
-import { MapContainer, TileLayer, Marker, useMap, useMapEvents, ZoomControl } from 'react-leaflet';
-import { useIonViewWillLeave, useIonViewDidEnter } from '@ionic/react'; // ✅ DAGDAG
+import { MapContainer, TileLayer, Marker, useMap, useMapEvents, ZoomControl, Polyline } from 'react-leaflet'; // ✅ IDINAGDAG ANG Polyline
+import { useIonViewWillLeave, useIonViewDidEnter } from '@ionic/react';
 import L from 'leaflet';
 
 const defaultIcon = L.icon({
@@ -32,6 +32,7 @@ interface MapProps {
   zoom?: number;
   secondaryLatitude?: number;
   secondaryLongitude?: number;
+  zoomOnMarkerClick?: boolean;
 }
 
 class MapErrorBoundary extends React.Component<{ children: React.ReactNode }, { hasError: boolean }> {
@@ -52,8 +53,6 @@ class MapErrorBoundary extends React.Component<{ children: React.ReactNode }, { 
 const MapUpdater = ({ lat, lng, zoom, secondaryLat, secondaryLng }: { lat: number; lng: number; zoom: number; secondaryLat?: number; secondaryLng?: number; }) => {
   const map = useMap();
 
-  // ✅ FIX 1: Itigil ang running animation BAGO lumabas ang page.
-  // Ito ang pumipigil sa "Invalid LatLng (NaN, NaN)" crash.
   useIonViewWillLeave(() => {
     try {
       if (map && typeof map.stop === 'function') {
@@ -62,7 +61,6 @@ const MapUpdater = ({ lat, lng, zoom, secondaryLat, secondaryLng }: { lat: numbe
     } catch {}
   });
 
-  // ✅ FIX 2: I-recompute ang size kapag bumabalik ang page.
   useIonViewDidEnter(() => {
     try {
       if (map && map.getContainer()) {
@@ -75,7 +73,6 @@ const MapUpdater = ({ lat, lng, zoom, secondaryLat, secondaryLng }: { lat: numbe
     const timer = setTimeout(() => {
       if (!map) return;
 
-      // ✅ FIX 3: Skip kung 0x0 ang container (hidden o transitioning).
       const size = map.getSize();
       if (!size || size.x === 0 || size.y === 0) return;
 
@@ -97,7 +94,6 @@ const MapUpdater = ({ lat, lng, zoom, secondaryLat, secondaryLng }: { lat: numbe
 
     return () => {
       clearTimeout(timer);
-      // ✅ FIX 4: I-stop din ang animation kapag nag-unmount / nag-change ang props.
       try {
         if (map && typeof map.stop === 'function') map.stop();
       } catch {}
@@ -112,7 +108,8 @@ const LocationMarker: React.FC<{
   longitude: number;
   draggable: boolean;
   onLocationChange?: (lat: number, lng: number) => void;
-}> = ({ latitude, longitude, draggable, onLocationChange }) => {
+  zoomOnClick?: boolean;
+}> = ({ latitude, longitude, draggable, onLocationChange, zoomOnClick }) => {
   const map = useMapEvents({
     click(e) {
       if (onLocationChange) {
@@ -138,6 +135,26 @@ const LocationMarker: React.FC<{
             onLocationChange(position.lat, position.lng);
           }
         },
+        click: () => {
+          if (zoomOnClick) {
+            map.flyTo([latitude, longitude], 18, { animate: true });
+          }
+        }
+      }}
+    />
+  );
+};
+
+const CustomerMarker: React.FC<{ lat: number, lng: number, zoomOnClick?: boolean }> = ({ lat, lng, zoomOnClick }) => {
+  const map = useMap();
+  return (
+    <Marker 
+      position={[lat, lng]} 
+      icon={customerIcon} 
+      eventHandlers={{
+        click: () => {
+          if (zoomOnClick) map.flyTo([lat, lng], 18, { animate: true });
+        }
       }}
     />
   );
@@ -152,6 +169,7 @@ const InteractiveMap: React.FC<MapProps> = ({
   zoom = 16,
   secondaryLatitude,
   secondaryLongitude,
+  zoomOnMarkerClick = false,
 }) => {
   const safeLat = (typeof latitude === 'number' && !isNaN(latitude)) ? latitude : 14.5995;
   const safeLng = (typeof longitude === 'number' && !isNaN(longitude)) ? longitude : 120.9842;
@@ -169,9 +187,35 @@ const InteractiveMap: React.FC<MapProps> = ({
           />
           <ZoomControl position="topright" />
           <MapUpdater lat={safeLat} lng={safeLng} zoom={zoom} secondaryLat={safeSecondaryLat} secondaryLng={safeSecondaryLng} />
-          <LocationMarker latitude={safeLat} longitude={safeLng} draggable={draggable} onLocationChange={onLocationChange} />
+          
+          {/* ✅ DITO ANG BLUE CONNECTING LINE */}
           {safeSecondaryLat !== undefined && safeSecondaryLng !== undefined && (
-            <Marker position={[safeSecondaryLat, safeSecondaryLng]} icon={customerIcon} />
+            <Polyline
+              positions={[
+                [safeLat, safeLng],
+                [safeSecondaryLat, safeSecondaryLng]
+              ]}
+              color="#0ea5e9"
+              weight={5}
+              opacity={0.8}
+              dashArray="10, 10"
+            />
+          )}
+
+          <LocationMarker 
+            latitude={safeLat} 
+            longitude={safeLng} 
+            draggable={draggable} 
+            onLocationChange={onLocationChange} 
+            zoomOnClick={zoomOnMarkerClick}
+          />
+          
+          {safeSecondaryLat !== undefined && safeSecondaryLng !== undefined && (
+            <CustomerMarker 
+              lat={safeSecondaryLat} 
+              lng={safeSecondaryLng} 
+              zoomOnClick={zoomOnMarkerClick} 
+            />
           )}
         </MapContainer>
       </MapErrorBoundary>

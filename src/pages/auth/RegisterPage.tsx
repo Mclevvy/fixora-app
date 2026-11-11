@@ -15,7 +15,6 @@ import {
   eyeOutline,
   eyeOffOutline,
   logoGoogle,
-  carSportOutline,
   constructOutline,
   personCircleOutline,
   shieldOutline,
@@ -24,7 +23,7 @@ import {
 } from 'ionicons/icons';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { saveMechanicProfile } from '../../api/firebaseService'; // ✅ IDINAGDAG
+import { saveMechanicProfile } from '../../api/firebaseService';
 import './Auth.css';
 
 const RegisterPage: React.FC = () => {
@@ -35,7 +34,6 @@ const RegisterPage: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [role, setRole] = useState<'customer' | 'mechanic' | 'admin'>('customer');
   
-  // ✅ BAGONG STATES PARA SA MECHANIC
   const [specialization, setSpecialization] = useState('General Repair');
   const [hourlyRate, setHourlyRate] = useState('250');
 
@@ -72,7 +70,6 @@ const RegisterPage: React.FC = () => {
     try {
       const user = await register({ email, password, fullName, phone, role });
       
-      // ✅ KUNG MECHANIC, I-SAVE AGAD ANG PROFILE PARA MAY STATUS AT RATE NA
       if (role === 'mechanic') {
         await saveMechanicProfile(user.id, {
           fullName,
@@ -80,7 +77,7 @@ const RegisterPage: React.FC = () => {
           phone,
           specialization,
           hourlyRate: Number(hourlyRate) || 250,
-          status: 'offline', // Default offline para ma-toggle pa niya
+          status: 'offline',
           category: 'repair',
           rating: 0,
           totalReviews: 0,
@@ -116,12 +113,11 @@ const RegisterPage: React.FC = () => {
       <IonContent className="auth-page" fullscreen>
         <div className="auth-wrapper">
           <div className="auth-card">
-            <div className="auth-logo">
-              <IonIcon icon={carSportOutline} />
-            </div>
+            
+            {/* Tinanggal na ang back button dito */}
 
             <h1 className="auth-title">Create Account</h1>
-            <p className="auth-subtitle">Join Fixora today</p>
+            <p className="auth-subtitle">Join Fixora to immediately fix your vehicle</p>
 
             <div className="role-selector">
               <div
@@ -196,7 +192,6 @@ const RegisterPage: React.FC = () => {
                 />
               </div>
 
-              {/* ✅ BAGONG INPUTS KAPAG MECHANIC */}
               {role === 'mechanic' && (
                 <>
                   <div className="input-group">

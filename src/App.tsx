@@ -1,6 +1,6 @@
 // src/App.tsx
-import React from 'react';
-import { IonApp, IonRouterOutlet, setupIonicReact, IonSpinner } from '@ionic/react';
+import React, { useState, useEffect } from 'react';
+import { IonApp, IonRouterOutlet, setupIonicReact } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
 import { Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
@@ -11,20 +11,25 @@ import RegisterPage from './pages/auth/RegisterPage';
 import CustomerTabs from './pages/customer/CustomerTabs';
 import MechanicTabsLayout from './pages/mechanic/MechanicTabsLayout';
 import AdminTabs from './pages/admin/AdminTabs';
+import LoadingScreen from './components/LoadingScreen'; 
 
 setupIonicReact();
 
 const AppRoutes: React.FC = () => {
   const { isAuthenticated, isLoading, user } = useAuth();
+  
+  const [showSplash, setShowSplash] = useState(true);
 
-  if (isLoading) {
-    return (
-      <IonApp>
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-          <IonSpinner name="crescent" />
-        </div>
-      </IonApp>
-    );
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowSplash(false);
+    }, 5000); // ✅ Pinalitan ng 5000ms (5 seconds)
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (isLoading || showSplash) {
+    return <LoadingScreen />;
   }
 
   const getDefaultRoute = () => {
@@ -47,21 +52,18 @@ const AppRoutes: React.FC = () => {
           isAuthenticated ? <Navigate to={getDefaultRoute()} replace /> : <RegisterPage />
         } />
 
-        {/* Customer Routes (Tabs) */}
         <Route path="/customer/*" element={
           isAuthenticated && user?.role === 'customer'
             ? <CustomerTabs />
             : <Navigate to="/login" replace />
         } />
 
-        {/* Mechanic Routes */}
         <Route path="/mechanic/*" element={
           isAuthenticated && user?.role === 'mechanic'
             ? <MechanicTabsLayout />
             : <Navigate to="/login" replace />
         } />
 
-        {/* Admin Routes */}
         <Route path="/admin/*" element={
           isAuthenticated && user?.role === 'admin'
             ? <AdminTabs />

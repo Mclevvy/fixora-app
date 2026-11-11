@@ -17,6 +17,7 @@ import {
   getCustomerBookings,
   subscribeToChat,
   sendChatMessage,
+  getUserProfile, // ✅ IDINAGDAG PARA MAKUNIN ANG PICTURE NG MECHANIC
 } from '../../api/firebaseService';
 import { ChatMessage } from '../../types';
 import './CustomerChat.css';
@@ -55,6 +56,7 @@ const ChatRoom: React.FC<{ bookingId: string }> = ({ bookingId }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [mechanicName, setMechanicName] = useState('Mechanic');
   const [mechanicId, setMechanicId] = useState('');
+  const [mechanicImage, setMechanicImage] = useState(''); // ✅ BAGONG STATE PARA SA PICTURE
   const contentRef = useRef<HTMLIonContentElement>(null);
 
   useEffect(() => {
@@ -67,6 +69,14 @@ const ChatRoom: React.FC<{ bookingId: string }> = ({ bookingId }) => {
         if (booking) {
           setMechanicName(booking.mechanicName || 'Mechanic');
           setMechanicId(booking.mechanicId || '');
+          
+          // ✅ KUNIN ANG PICTURE NG MECHANIC DIREKTA SA DATABASE
+          if (booking.mechanicId) {
+            const profile = await getUserProfile(booking.mechanicId);
+            if (profile && profile.profileImage) {
+              setMechanicImage(profile.profileImage);
+            }
+          }
         }
       } catch (error) {
         console.error('Error loading booking:', error);
@@ -146,11 +156,15 @@ const ChatRoom: React.FC<{ bookingId: string }> = ({ bookingId }) => {
             >
               <IonIcon icon={arrowBackOutline} />
             </button>
+            
+            {/* ✅ BINAGO: Ginamit ang mechanicImage na may fallback */}
             <img
-              src="https://ionicframework.com/docs/img/demos/avatar.svg"
+              src={mechanicImage || "https://ionicframework.com/docs/img/demos/avatar.svg"}
               alt={mechanicName}
               className="chat-room-avatar"
+              style={{ objectFit: 'cover' }}
             />
+
             <div className="chat-room-info">
               <h3>{mechanicName}</h3>
               <div className="chat-room-status">
@@ -182,10 +196,12 @@ const ChatRoom: React.FC<{ bookingId: string }> = ({ bookingId }) => {
                     className={`message-row ${isOwn ? 'own' : ''}`}
                   >
                     {!isOwn && (
+                      // ✅ BINAGO: Ginamit din ang mechanicImage dito
                       <img
-                        src="https://ionicframework.com/docs/img/demos/avatar.svg"
+                        src={mechanicImage || "https://ionicframework.com/docs/img/demos/avatar.svg"}
                         alt="Avatar"
                         className="message-avatar"
+                        style={{ objectFit: 'cover' }}
                       />
                     )}
                     <div 

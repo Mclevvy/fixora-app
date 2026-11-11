@@ -1,37 +1,13 @@
-
-
 // src/api/firebaseService.ts
 import {
-  collection,
-  doc,
-  getDoc,
-  getDocs,
-  addDoc,
-  updateDoc,
-  deleteDoc,
-  setDoc,
-  query,
-  where,
-  orderBy,
-  onSnapshot,
+  collection, doc, getDoc, getDocs, addDoc, updateDoc, deleteDoc, setDoc, query, where, orderBy, onSnapshot,
 } from 'firebase/firestore';
 import {
-  EmailAuthProvider,
-  reauthenticateWithCredential,
-  updatePassword,
-  sendPasswordResetEmail,
+  EmailAuthProvider, reauthenticateWithCredential, updatePassword, sendPasswordResetEmail,
 } from 'firebase/auth';
 import { auth, db } from '../firebase';
 import {
-  Mechanic,
-  Booking,
-  Review,
-  ChatMessage,
-  InventoryItem,
-  BookingStatus,
-  User,
-  Vehicle,
-  MechanicStatus, // ✅ IDINAGDAG
+  Mechanic, Booking, Review, ChatMessage, InventoryItem, BookingStatus, User, Vehicle, MechanicStatus,
 } from '../types';
 
 // ============ HELPERS ============
@@ -49,7 +25,6 @@ const removeUndefined = <T extends Record<string, any>>(obj: T): Partial<T> => {
 const now = () => new Date().toISOString();
 
 // ============ MECHANICS ============
-// Hanapin ang getAllMechanics function at palitan ito:
 export const getAllMechanics = async (): Promise<Mechanic[]> => {
   try {
     const usersRef = collection(db, 'users');
@@ -72,11 +47,13 @@ export const getAllMechanics = async (): Promise<Mechanic[]> => {
         specialization: mechData.specialization || 'General Repair',
         category: mechData.category || 'repair',
         status: mechData.status || 'offline',
+        accountStatus: userData.accountStatus || (userData.isActive === false ? 'suspended' : 'active'), // ✅ IDINAGDAG ITO
         rating: mechData.rating ?? 4.5,
         totalReviews: mechData.totalReviews ?? 0,
         hourlyRate: mechData.hourlyRate ?? 250,
-        services: mechData.services || [], // ✅ IDINAGDAG: Kunin ang services
+        services: mechData.services || [], 
         location: mechData.location || { latitude: 0, longitude: 0 },
+        schedule: mechData.schedule || { days: [], startTime: '08:00', endTime: '18:00' },
       });
     }
 
@@ -87,12 +64,10 @@ export const getAllMechanics = async (): Promise<Mechanic[]> => {
   }
 };
 
-// ... (Iwanan ang ibang functions na walang binago)
-
 export const getTopRatedMechanics = async (limit: number = 5): Promise<Mechanic[]> => {
   const all = await getAllMechanics();
   return all
-    .filter((m) => m.status === 'available') // ✅ Pinalitan para tumugma sa bagong status
+    .filter((m) => m.status === 'available') 
     .sort((a, b) => b.rating - a.rating)
     .slice(0, limit);
 };
@@ -119,7 +94,7 @@ export const saveMechanicProfile = async (
 
 export const setMechanicAvailability = async (
   mechanicId: string,
-  status: MechanicStatus // ✅ Binago para tanggapin ang bagong status
+  status: MechanicStatus 
 ): Promise<void> => {
   await updateDoc(doc(db, 'mechanics', mechanicId), { status });
 };
@@ -520,5 +495,69 @@ export const getAllInventoryItems = async (): Promise<InventoryItem[]> => {
   } catch (error) {
     console.error('Error fetching all inventory:', error);
     return [];
+  }
+};
+
+export const updateUserAccountStatus = async (
+  userId: string,
+  status: 'active' | 'suspended' | 'blocked',
+  reason: string = '',
+  daysToSuspend: number = 0
+): Promise<void> => {
+  const data: any = {
+    accountStatus: status,
+    statusReason: reason,
+    isActive: status === 'active', 
+  };
+
+  if (status === 'suspended' && daysToSuspend > 0) {
+    const until = new Date();
+    until.setDate(until.getDate() + daysToSuspend);
+    data.suspendUntil = until.toISOString();
+  } else {
+    data.suspendUntil = null; 
+  }
+
+  await updateDoc(doc(db, 'users', userId), data);
+};
+
+export const deleteUserAccount = async (userId: string, role: string): Promise<void> => {
+  try {
+    await deleteDoc(doc(db, 'users', userId));
+    if (role === 'mechanic') {
+      await deleteDoc(doc(db, 'mechanics', userId));
+    }
+  } catch (error) {
+    console.error('Error deleting user:', error);
+    throw error;
+  }
+};
+
+// ✅ BAGONG DAGDAG PARA SA IMGBB UPLOAD
+export const uploadProfilePicture = async (userId: string, file: File): Promise<string> => {
+  try {
+    const formData = new FormData();
+    formData.append('image', file);
+    
+    // ⚠️ PALITAN ITO NG API KEY MO GALING SA IMGBB.COM
+    const IMGBB_API_KEY = '18181ce218f2f62e972e050b1c5eec1e'; 
+    
+    const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+      method: 'POST',
+      body: formData,
+    });
+    
+    const data = await response.json();
+    if (!data.success) throw new Error('ImgBB upload failed');
+
+    const downloadURL = data.data.url;
+    
+    // I-save ang URL sa Firestore users collection
+    await updateDoc(doc(db, 'users', userId), { profileImage: downloadURL });
+    
+    return downloadURL;
+  } catch (error) {
+    console.error('Error uploading profile picture:', error);
+    throw error;
   }
 };

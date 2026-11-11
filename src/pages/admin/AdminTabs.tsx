@@ -14,18 +14,19 @@ import {
   calendarOutline,
   barChartOutline,
   notificationsOutline,
-  logOutOutline, // ✅ IDINAGDAG PARA SA LOGOUT ICON
+  logOutOutline, 
 } from 'ionicons/icons';
-import { useAuth } from '../../context/AuthContext'; // ✅ IDINAGDAG
+import { useAuth } from '../../context/AuthContext'; 
 
 import AdminUsers from './AdminUsers';
 import AdminBookings from './AdminBookings';
 import AdminReports from './AdminReports';
 import AdminNotifications from './AdminNotifications';
+import AdminBookingDetail from './AdminBookingDetail'; // ✅ IMPORT NG BAGONG FILE
 
 const AdminTabs: React.FC = () => {
-  const { logout } = useAuth(); // ✅ IDINAGDAG
-  const navigate = useNavigate(); // ✅ IDINAGDAG
+  const { logout } = useAuth(); 
+  const navigate = useNavigate(); 
 
   const handleLogout = async () => {
     await logout();
@@ -37,6 +38,9 @@ const AdminTabs: React.FC = () => {
       <IonRouterOutlet>
         <Route path="/admin/users" element={<AdminUsers />} />
         <Route path="/admin/bookings" element={<AdminBookings />} />
+        {/* ✅ BAGONG ROUTE PARA SA DETAILS */}
+        <Route path="/admin/bookings/:bookingId" element={<AdminBookingDetail />} />
+        
         <Route path="/admin/reports" element={<AdminReports />} />
         <Route path="/admin/notifications" element={<AdminNotifications />} />
         <Route path="/admin" element={<Navigate to="/admin/users" replace />} />
@@ -63,7 +67,6 @@ const AdminTabs: React.FC = () => {
           <IonLabel>Alerts</IonLabel>
         </IonTabButton>
 
-        {/* ✅ ITO ANG LOGOUT TAB BUTTON */}
         <IonTabButton tab="logout" onClick={handleLogout} style={{ cursor: 'pointer' }}>
           <IonIcon icon={logOutOutline} color="danger" />
           <IonLabel color="danger">Logout</IonLabel>

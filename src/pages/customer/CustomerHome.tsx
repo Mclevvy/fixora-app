@@ -153,7 +153,21 @@ const CustomerHome: React.FC = () => {
                         <div className={`availability-dot ${mechanic.status}`} />
                       </div>
                       <div className="mechanic-info">
-                        <h3 className="mechanic-name">{mechanic.fullName}</h3>
+                        {/* ✅ BAGONG DAGDAG: PANGALAN AT BADGE */}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                          <h3 className="mechanic-name" style={{ margin: 0 }}>{mechanic.fullName}</h3>
+                          {mechanic.accountStatus && mechanic.accountStatus !== 'active' && (
+                            <span style={{ 
+                              fontSize: '9px', 
+                              background: mechanic.accountStatus === 'blocked' ? '#fee2e2' : '#fef3c7', 
+                              color: mechanic.accountStatus === 'blocked' ? '#991b1b' : '#92400e', 
+                              padding: '2px 6px', borderRadius: '4px', fontWeight: 800 
+                            }}>
+                              {mechanic.accountStatus.toUpperCase()}
+                            </span>
+                          )}
+                        </div>
+
                         <p className="mechanic-specialty">{mechanic.specialization}</p>
                         <div className="mechanic-meta" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: '4px', background: 'transparent', padding: 0 }}>
                           {mechanic.services && mechanic.services.length > 0 ? (

@@ -21,14 +21,12 @@
   max-width: 440px;
   background: #ffffff;
   border-radius: 30px;
-  padding: 40px 32px; /* Default mobile padding */
+  padding: 40px 32px; /* Ibinalik sa 40px top padding */
   box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.08), 0 5px 15px -5px rgba(0, 0, 0, 0.04);
   position: relative;
   z-index: 1;
   animation: slideUp 0.5s ease-out;
-  
-  /* 🔥 Para hindi tumagas yung image sa rounded corners */
-  overflow: hidden; 
+  overflow: hidden; /* 🔥 Para hindi tumagas yung image sa rounded corners */
 }
 
 @keyframes slideUp {
@@ -36,13 +34,12 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* ✅ LOGO (Default Mobile) */
+/* ✅ LOGO (IBINALIK PARA DUMIKIT SA GILID) */
 .auth-logo-header {
-  /* Kinakain ang padding ng card: 32px left/right, 40px top */
-  width: calc(100% + 64px); 
+  width: calc(100% + 64px); /* Kinakain ang left at right padding (32px + 32px) */
   margin-left: -32px;
   margin-right: -32px;
-  margin-top: -40px; 
+  margin-top: -40px; /* Kinakain ang top padding */
   margin-bottom: 24px;
   display: block;
 }
@@ -51,9 +48,6 @@
   width: 100%;
   display: block; 
   height: auto;
-  
-  /* 🔥 Pwede mong i-uncomment ito kung gusto mong maging transparent yung itim */
-  /* mix-blend-mode: screen; */ 
 }
 
 .auth-title {
@@ -68,7 +62,7 @@
   font-size: 14px;
   color: #64748b;
   text-align: center;
-  margin: 0 0 30px 0;
+  margin: 0 0 24px 0;
 }
 
 /* ============================
@@ -133,17 +127,6 @@
 
 .password-toggle:hover {
   color: #0ea5e9;
-}
-
-.forgot-password a {
-  color: #0ea5e9;
-  font-size: 13px;
-  font-weight: 700;
-  text-decoration: none;
-}
-
-.forgot-password a:hover {
-  text-decoration: underline;
 }
 
 /* ============================
@@ -213,12 +196,12 @@
 .auth-footer a:hover { text-decoration: underline; }
 
 /* ============================
-   ROLE SELECTOR
+   ROLE SELECTOR (Para sa Register)
    ============================ */
 .role-selector {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
   margin-bottom: 24px;
 }
 
@@ -226,7 +209,7 @@
   background: #f8fafc;
   border: 1.5px solid #e2e8f0;
   border-radius: 16px;
-  padding: 14px 10px;
+  padding: 12px 6px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -236,14 +219,8 @@
   box-sizing: border-box;
 }
 
-.role-option:nth-child(3) {
-  grid-column: 1 / -1;
-  width: calc(50% - 5px);
-  justify-self: center;
-}
-
 .role-option ion-icon { font-size: 24px; color: #94a3b8; }
-.role-option span { font-size: 13px; font-weight: 700; color: #64748b; }
+.role-option span { font-size: 12px; font-weight: 700; color: #64748b; }
 
 .role-option.active {
   background: #e0f2fe;
@@ -256,51 +233,43 @@
 }
 
 /* ============================
-   RESPONSIVE (NA-AYOS NA DITO)
+   RESPONSIVE
    ============================ */
 @media (min-width: 768px) {
   .auth-wrapper { padding: 40px; }
   
-  /* Nagbago padding sa desktop (48px top/bottom, 40px left/right) */
   .auth-card { 
     max-width: 480px; 
     padding: 48px 40px; 
   }
   
-  /* In-adjust ang margins para sumagad pa rin sa desktop */
   .auth-logo-header {
     width: calc(100% + 80px); /* 40px left + 40px right */
     margin-left: -40px;
     margin-right: -40px;
-    margin-top: -48px; /* 48px top padding */
+    margin-top: -48px; 
     margin-bottom: 32px;
-  }
-
-  /* TINANGGAL NA YUNG max-width: 300px DITO PARA SUMAGAD SA KANAN */
-  .auth-logo-img {
-    max-width: none; 
   }
 
   .auth-title { font-size: 30px; }
 }
 
 @media (max-width: 360px) {
-  /* Nagbago padding sa maliit na phone (32px top/bottom, 20px left/right) */
   .auth-card { 
     padding: 32px 20px; 
     border-radius: 24px; 
   }
   
-  /* In-adjust ang margins para sa maliit na phone */
   .auth-logo-header {
     width: calc(100% + 40px); /* 20px left + 20px right */
     margin-left: -20px;
     margin-right: -20px;
-    margin-top: -32px; /* 32px top padding */
+    margin-top: -32px; 
     margin-bottom: 20px;
   }
 
   .auth-title { font-size: 22px; }
   .input-group { padding: 12px 14px; border-radius: 12px; }
   .auth-btn { padding: 14px; font-size: 14px; border-radius: 12px; }
+  .role-option span { font-size: 11px; }
 }

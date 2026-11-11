@@ -21,6 +21,7 @@ import {
   createOutline,
   trashOutline,
   alertCircleOutline,
+  removeCircleOutline,
 } from 'ionicons/icons';
 import { useAuth } from '../../context/AuthContext';
 import {
@@ -42,12 +43,14 @@ const CATEGORIES = [
   'Other',
 ];
 
+const UNITS = ['pcs', 'set', 'liters', 'kg', 'meters', 'hours'];
+
 const emptyItem = {
   name: '',
   category: 'Engine',
   quantity: 0,
   price: 0,
-  unit: 'pc',
+  unit: 'pcs',
   lowStockThreshold: 5,
 };
 
@@ -97,20 +100,20 @@ const MechanicInventory: React.FC = () => {
         await updateInventoryItem(editing.id, {
           name: form.name,
           category: form.category,
-          quantity: Number(form.quantity),
-          price: Number(form.price),
-          unit: form.unit,
-          lowStockThreshold: Number(form.lowStockThreshold),
+          quantity: Number(form.quantity) || 0,
+          price: Number(form.price) || 0,
+          unit: form.unit || 'pcs',
+          lowStockThreshold: Number(form.lowStockThreshold) || 0,
         });
         setToast({ show: true, msg: 'Item updated', color: 'success' });
       } else {
         await addInventoryItem(user.id, {
           name: form.name,
           category: form.category,
-          quantity: Number(form.quantity),
-          price: Number(form.price),
-          unit: form.unit,
-          lowStockThreshold: Number(form.lowStockThreshold),
+          quantity: Number(form.quantity) || 0,
+          price: Number(form.price) || 0,
+          unit: form.unit || 'pcs',
+          lowStockThreshold: Number(form.lowStockThreshold) || 0,
         });
         setToast({ show: true, msg: 'Item added', color: 'success' });
       }
@@ -118,6 +121,20 @@ const MechanicInventory: React.FC = () => {
     } catch (e) {
       console.error(e);
       setToast({ show: true, msg: 'Save failed', color: 'danger' });
+    }
+  };
+
+  const handleDeduct = async (e: React.MouseEvent, item: InventoryItem) => {
+    e.stopPropagation();
+    if (item.quantity <= 0) {
+      setToast({ show: true, msg: 'Out of stock na po ito.', color: 'warning' });
+      return;
+    }
+    try {
+      await updateInventoryItem(item.id, { quantity: Number(item.quantity) - 1 });
+      setToast({ show: true, msg: `1 ${item.unit} ng ${item.name} ang nagamit.`, color: 'success' });
+    } catch (error) {
+      setToast({ show: true, msg: 'Failed to deduct stock', color: 'danger' });
     }
   };
 
@@ -141,7 +158,7 @@ const MechanicInventory: React.FC = () => {
   );
 
   const lowStockCount = items.filter(
-    (i) => i.quantity <= i.lowStockThreshold
+    (i) => Number(i.quantity) <= Number(i.lowStockThreshold)
   ).length;
 
   if (isLoading) {
@@ -159,43 +176,90 @@ const MechanicInventory: React.FC = () => {
   return (
     <IonPage>
       <IonContent className="inv-page" fullscreen>
-        <div className="inv-header">
-          <div className="inv-head-row">
-            <div>
-              <h1>Inventory</h1>
-              <p>
-                {items.length} items • {lowStockCount} low stock
-              </p>
-            </div>
-            <button className="inv-add-btn" onClick={openAdd}>
-              <IonIcon icon={addOutline} /> Add
-            </button>
+        
+        {/* ✅ HEADER: Title at Subtitle lang ang naiwan */}
+        <div 
+          className="inv-header" 
+          style={{ 
+            paddingBottom: '30px', 
+            borderBottomLeftRadius: '32px', 
+            borderBottomRightRadius: '32px' 
+          }}
+        >
+          <div style={{ position: 'relative', zIndex: 1 }}>
+            <h1 style={{ margin: 0, fontSize: '24px', fontWeight: 800, color: 'white', letterSpacing: '-0.5px' }}>
+              Inventory Management
+            </h1>
+            <p style={{ margin: '4px 0 0', fontSize: '13px', color: 'rgba(255, 255, 255, 0.85)', fontWeight: 500, lineHeight: 1.5 }}>
+              Monitor, organize, and manage your available parts and supplies.
+            </p>
           </div>
+        </div>
 
+        {/* ✅ NASA LABAS NA: Stats at Add Button */}
+        <div 
+          style={{ 
+            padding: '20px 20px 0 20px', 
+            display: 'flex', 
+            justifyContent: 'space-between', 
+            alignItems: 'center', 
+            marginBottom: '16px' 
+          }}
+        >
+          <div>
+            <p style={{ margin: 0, fontSize: '14px', color: '#475569', fontWeight: 600 }}>
+              {items.length} items • {lowStockCount} low stock
+            </p>
+          </div>
+          <button 
+            className="inv-add-btn" 
+            onClick={openAdd} 
+            style={{ padding: '8px 16px', fontSize: '13px', boxShadow: '0 4px 10px rgba(14, 165, 233, 0.2)' }}
+          >
+            <IonIcon icon={addOutline} /> Add
+          </button>
+        </div>
+
+        {/* ✅ NASA LABAS NA: Search Bar */}
+        <div style={{ padding: '0 20px' }}>
           <IonSearchbar
             value={search}
             onIonInput={(e) => setSearch(e.detail.value!)}
             placeholder="Search items..."
             className="inv-search"
+            style={{ 
+              '--background': 'white', 
+              '--border-radius': '16px', 
+              '--box-shadow': '0 4px 15px rgba(0, 0, 0, 0.05)' 
+            } as React.CSSProperties} // 👈 IDINAGDAG ITO PARA MA-FIX ANG ERROR
           />
         </div>
 
         {lowStockCount > 0 && (
-          <div className="inv-low-banner">
+          <div className="inv-low-banner" style={{ margin: '16px 20px 0' }}>
             <IonIcon icon={alertCircleOutline} />
             <span>{lowStockCount} item(s) low in stock</span>
           </div>
         )}
 
-        <div className="inv-list">
+        {/* ✅ LISTAHAN NG MGA ITEMS (Nasa labas din) */}
+        <div 
+          className="inv-list" 
+          style={{ 
+            padding: '20px',
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+            gap: '16px'
+          }}
+        >
           {filtered.length === 0 ? (
-            <div className="inv-empty">
+            <div className="inv-empty" style={{ gridColumn: '1 / -1' }}>
               <IonIcon icon={cubeOutline} />
               <p>No items yet. Tap "Add" to start.</p>
             </div>
           ) : (
             filtered.map((item) => {
-              const isLow = item.quantity <= item.lowStockThreshold;
+              const isLow = Number(item.quantity) <= Number(item.lowStockThreshold);
               return (
                 <div key={item.id} className="inv-card">
                   <div className="inv-card-top">
@@ -205,17 +269,24 @@ const MechanicInventory: React.FC = () => {
                     <div className="inv-info">
                       <h3>{item.name}</h3>
                       <p>
-                        {item.category} • ₱{item.price.toLocaleString()} /{' '}
+                        {item.category} • ₱{Number(item.price).toLocaleString()} /{' '}
                         {item.unit}
                       </p>
                     </div>
-                    {/* ✅ PINALITAN: Custom class na imbes na default green badge */}
                     <IonBadge className={`inv-badge ${isLow ? 'low' : ''}`}>
                       {item.quantity} {item.unit}
                     </IonBadge>
                   </div>
 
                   <div className="inv-card-actions">
+                    <button
+                      className="inv-btn use"
+                      onClick={(e) => handleDeduct(e, item)}
+                      style={{ background: '#e0f2fe', color: '#0ea5e9', border: 'none', flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', padding: '8px', borderRadius: '8px', cursor: 'pointer', fontWeight: 600 }}
+                    >
+                      <IonIcon icon={removeCircleOutline} /> Use (-1)
+                    </button>
+                    
                     <button
                       className="inv-btn edit"
                       onClick={() => openEdit(item)}
@@ -226,7 +297,7 @@ const MechanicInventory: React.FC = () => {
                       className="inv-btn delete"
                       onClick={() => setDeleteTarget(item.id)}
                     >
-                      <IonIcon icon={trashOutline} /> Delete
+                      <IonIcon icon={trashOutline} />
                     </button>
                   </div>
                 </div>
@@ -278,13 +349,20 @@ const MechanicInventory: React.FC = () => {
                 }
                 className="inv-input half"
               />
-              <IonInput
+              
+              <IonSelect
                 label="Unit"
                 labelPlacement="floating"
                 value={form.unit}
-                onIonInput={(e) => setForm({ ...form, unit: e.detail.value })}
+                onIonChange={(e) => setForm({ ...form, unit: e.detail.value })}
                 className="inv-input half"
-              />
+              >
+                {UNITS.map((u) => (
+                  <IonSelectOption key={u} value={u}>
+                    {u}
+                  </IonSelectOption>
+                ))}
+              </IonSelect>
             </div>
 
             <IonInput

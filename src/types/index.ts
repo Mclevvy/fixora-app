@@ -10,6 +10,11 @@ export interface User {
   profileImage?: string;
   createdAt: string;
   isActive?: boolean;
+  
+  // ✅ BAGONG DAGDAG PARA SA ADMIN MODERATION
+  accountStatus?: 'active' | 'suspended' | 'blocked';
+  suspendUntil?: string; 
+  statusReason?: string; 
 }
 
 export interface Vehicle {
@@ -46,7 +51,6 @@ export interface MechanicSchedule {
   endTime: string;
 }
 
-// ✅ BAGONG INTERFACE PARA SA MGA SERBISYO
 export interface ServiceItem {
   id: string;
   name: string;
@@ -63,10 +67,11 @@ export interface Mechanic {
   specializations?: string[];
   category: ServiceCategory;
   status: MechanicStatus;
+  accountStatus?: 'active' | 'suspended' | 'blocked'; // ✅ IDINAGDAG ITO
   rating: number;
   totalReviews: number;
-  hourlyRate: number; // Nanatili para hindi masira ang lumang records
-  services?: ServiceItem[]; // ✅ BAGONG FIELD PARA SA MGA SERBISYO
+  hourlyRate: number; 
+  services?: ServiceItem[]; 
   location: {
     latitude: number;
     longitude: number;
@@ -80,11 +85,12 @@ export interface Booking {
   customerId: string;
   customerName: string;
   customerPhone: string;
+  customerProfileImage?: string; // ✅ BAGONG DAGDAG PARA SA PROFILE PICTURE
   mechanicId?: string;
   mechanicName?: string;
   mechanicPhone?: string;
   serviceType: ServiceType;
-  serviceName?: string; // ✅ Idinagdag para malaman kung anong serbisyo ang binook
+  serviceName?: string;
   vehicle: Vehicle;
   issueDescription: string;
   location: {

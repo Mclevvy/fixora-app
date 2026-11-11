@@ -10,12 +10,16 @@ import {
   IonToast,
   IonTextarea,
 } from '@ionic/react';
-import { saveOutline, logOutOutline, star, locationOutline, navigateOutline, addOutline, trashOutline } from 'ionicons/icons';
+import { 
+  saveOutline, logOutOutline, star, locationOutline, navigateOutline, addOutline, trashOutline,
+  cameraOutline // ✅ IDINAGDAG
+} from 'ionicons/icons';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import {
   getMechanicProfile,
   saveMechanicProfile,
+  uploadProfilePicture, // ✅ IDINAGDAG
 } from '../../api/firebaseService';
 import { reverseGeocode } from '../../api/geocoding';
 import { Mechanic, MechanicSchedule, ServiceItem } from '../../types';
@@ -29,27 +33,28 @@ interface LocalProfile {
   fullName: string;
   email: string;
   phone: string;
+  profileImage?: string; // ✅ IDINAGDAG PARA MAKAPASOK ANG IMAGE
   specialization: string;
   specializations: string[];
   category: 'repair' | 'roadside' | 'both';
   status: 'available' | 'busy' | 'offline';
   rating: number;
   totalReviews: number;
-  services: ServiceItem[]; // ✅ Binago
+  services: ServiceItem[]; 
   location: { latitude: number; longitude: number; address?: string };
   schedule: MechanicSchedule;
 }
 
-const defaultProfile = (id: string, fullName: string, email: string): LocalProfile => ({
-  id, fullName, email, phone: '', specialization: 'General Repair', specializations: [],
+const defaultProfile = (id: string, fullName: string, email: string, profileImage?: string): LocalProfile => ({
+  id, fullName, email, phone: '', profileImage: profileImage || '', specialization: 'General Repair', specializations: [],
   category: 'repair', status: 'offline', rating: 0, totalReviews: 0, 
-  services: [], // ✅ Default empty array
+  services: [], 
   location: { latitude: 14.5995, longitude: 120.9842, address: '' },
   schedule: { days: [], startTime: '08:00', endTime: '18:00' },
 });
 
 const MechanicProfile: React.FC = () => {
-  const { user, logout } = useAuth();
+  const { user, logout, updateUser } = useAuth(); // ✅ IDINAGDAG ANG updateUser
   const navigate = useNavigate();
   const [profile, setProfile] = useState<LocalProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -59,6 +64,9 @@ const MechanicProfile: React.FC = () => {
   // ✅ States para sa pag-add ng bagong service
   const [newServiceName, setNewServiceName] = useState('');
   const [newServicePrice, setNewServicePrice] = useState('');
+  
+  // ✅ BAGONG STATE PARA SA IMAGE UPLOAD
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
 
   useEffect(() => {
     load();
@@ -72,18 +80,42 @@ const MechanicProfile: React.FC = () => {
       if (p) {
         setProfile({
           id: user.id, fullName: p.fullName || user.fullName || '', email: p.email || user.email || '',
+          profileImage: p.profileImage || user.profileImage || '', // ✅ Kunin ang image
           phone: p.phone || '', specialization: p.specialization || 'General Repair',
           specializations: p.specializations || [], category: p.category || 'repair',
           status: p.status || 'offline', rating: p.rating || 0, totalReviews: p.totalReviews || 0,
-          services: p.services || [], // ✅ Kunin ang services
+          services: p.services || [], 
           location: p.location || { latitude: 14.5995, longitude: 120.9842, address: '' },
           schedule: p.schedule || { days: [], startTime: '08:00', endTime: '18:00' },
         });
       } else {
-        setProfile(defaultProfile(user.id, user.fullName || '', user.email || ''));
+        setProfile(defaultProfile(user.id, user.fullName || '', user.email || '', user.profileImage));
       }
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  // ✅ BAGONG FUNCTION PARA SA PAG-UPLOAD NG IMAGE
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file || !user || !profile) return;
+
+    if (!file.type.startsWith('image/')) {
+      setToast({ show: true, msg: 'Please select an image file', color: 'danger' });
+      return;
+    }
+
+    setIsUploadingImage(true);
+    try {
+      const newImageUrl = await uploadProfilePicture(user.id, file);
+      setProfile({ ...profile, profileImage: newImageUrl });
+      updateUser({ ...user, profileImage: newImageUrl }); // I-update ang global auth state
+      setToast({ show: true, msg: 'Profile picture updated!', color: 'success' });
+    } catch (error) {
+      setToast({ show: true, msg: 'Failed to upload image', color: 'danger' });
+    } finally {
+      setIsUploadingImage(false);
     }
   };
 
@@ -91,7 +123,7 @@ const MechanicProfile: React.FC = () => {
   const handleAddService = () => {
     if (!newServiceName.trim() || !newServicePrice.trim() || !profile) return;
     const newService: ServiceItem = {
-      id: Date.now().toString(), // Generate random ID
+      id: Date.now().toString(), 
       name: newServiceName.trim(),
       price: Number(newServicePrice),
     };
@@ -161,9 +193,10 @@ const MechanicProfile: React.FC = () => {
     try {
       const data: Partial<Mechanic> = {
         fullName: profile.fullName, email: profile.email, phone: profile.phone,
+        profileImage: profile.profileImage, // ✅ Isama sa save
         specialization: profile.specialization, specializations: profile.specializations,
         category: profile.category, status: profile.status, 
-        services: profile.services, // ✅ I-save ang services
+        services: profile.services, 
         location: profile.location, schedule: profile.schedule,
       };
       await saveMechanicProfile(profile.id, data);
@@ -193,7 +226,50 @@ const MechanicProfile: React.FC = () => {
     <IonPage>
       <IonContent className="mech-profile" fullscreen>
         <div className="mp-header">
-          <div className="mp-avatar">{profile.fullName.charAt(0).toUpperCase() || 'M'}</div>
+          
+                    {/* ✅ BINAGO: CLICKABLE AVATAR NA MAY CAMERA ICON */}
+          <label htmlFor="mech-profile-upload" style={{ cursor: 'pointer', position: 'relative', display: 'inline-block' }}>
+            <div className="mp-avatar" style={{ overflow: 'hidden', padding: 0 }}>
+              {isUploadingImage ? (
+                <IonSpinner name="crescent" style={{ color: 'white' }} />
+              ) : profile.profileImage ? (
+                <img 
+                  src={profile.profileImage} 
+                  alt={profile.fullName} 
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                />
+              ) : (
+                profile.fullName.charAt(0).toUpperCase() || 'M'
+              )}
+            </div>
+            
+            {/* ✅ INAYOS: Puting background, may shadow, at bahagyang lumalabas sa gilid */}
+            <div style={{
+              position: 'absolute', 
+              bottom: '0px', 
+              right: '0px', 
+              background: '#ffffff', 
+              borderRadius: '50%', 
+              padding: '8px', 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center', 
+              border: '2px solid #e2e8f0',
+              boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+              zIndex: 10
+            }}>
+              <IonIcon icon={cameraOutline} style={{ color: '#0ea5e9', fontSize: '18px' }} />
+            </div>
+          </label>
+          <input 
+            id="mech-profile-upload" 
+            type="file" 
+            accept="image/*" 
+            style={{ display: 'none' }} 
+            onChange={handleImageUpload} 
+            disabled={isUploadingImage}
+          />
+
           <h1>{profile.fullName}</h1>
           <p>{profile.email}</p>
 
@@ -207,12 +283,24 @@ const MechanicProfile: React.FC = () => {
         <div className="mp-section">
           <h2>Customer Preview</h2>
           <div className="mp-card-preview">
-            <div className="mp-preview-avatar">{profile.fullName.charAt(0).toUpperCase()}</div>
+            
+            {/* ✅ BINAGO: Ipinapakita ang picture sa Customer Preview */}
+            <div className="mp-preview-avatar" style={{ overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              {profile.profileImage ? (
+                <img 
+                  src={profile.profileImage} 
+                  alt={profile.fullName} 
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                />
+              ) : (
+                profile.fullName.charAt(0).toUpperCase()
+              )}
+            </div>
+
             <div className="mp-preview-info">
               <h3>{profile.fullName}</h3>
               <p>{profile.specialization}</p>
               <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '12px', marginTop: '6px' }}>
-                {/* ✅ Ipinapakita ang unang service imbes na hourly rate */}
                 <span style={{ fontSize: '13px', fontWeight: '800', color: '#0f172a' }}>
                   {profile.services.length > 0 ? `From ₱${profile.services[0].price}` : 'No services set'}
                 </span>
@@ -233,7 +321,7 @@ const MechanicProfile: React.FC = () => {
           </div>
         </div>
 
-        {/* ✅ BAGONG SECTION PARA SA MGA SERBISYO */}
+        {/* ✅ SECTION PARA SA MGA SERBISYO */}
         <div className="mp-section">
           <h2>My Services & Prices</h2>
           <div className="mp-card">

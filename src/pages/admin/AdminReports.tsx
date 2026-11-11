@@ -65,7 +65,15 @@ const AdminReports: React.FC = () => {
     <IonPage>
       <IonContent className="admin-page" fullscreen>
         <div className="admin-container">
-          <div className="admin-header">
+          
+          {/* ✅ CYAN/BLUE HEADER */}
+          <div 
+            className="admin-header"
+            style={{ 
+              background: 'linear-gradient(135deg, #00b4d8 0%, #06b6d4 100%)',
+              boxShadow: '0 10px 30px -10px rgba(0, 180, 216, 0.5)'
+            }}
+          >
             <h1>System Reports</h1>
             <p>Platform performance summary</p>
           </div>
@@ -113,8 +121,8 @@ const AdminReports: React.FC = () => {
                     <h3 style={{ margin: 0, fontSize: 15, fontWeight: 700 }}>Download Transactions</h3>
                     <p style={{ margin: '4px 0 0', fontSize: 13, color: '#6b7280' }}>Generate a CSV file containing all booking history.</p>
                   </div>
-                  <button className="admin-btn btn-export" onClick={downloadCSV} style={{ width: '100%', padding: '14px' }}>
-                    <IonIcon icon={downloadOutline} style={{ marginRight: 8, verticalAlign: 'middle', fontSize: 18 }} />
+                  <button className="admin-btn btn-export" onClick={downloadCSV} style={{ width: '100%', padding: '14px', background: '#0ea5e9', color: 'white', borderRadius: '12px', border: 'none', fontWeight: 'bold', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                    <IonIcon icon={downloadOutline} style={{ fontSize: 18 }} />
                     Download CSV Report
                   </button>
                 </div>

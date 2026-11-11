@@ -1,0 +1,122 @@
+/* src/components/LoadingScreen.css */
+
+.loading-bg {
+  --background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%);
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* --- SCENE (Road at Car) --- */
+.scene-wrapper {
+  position: relative;
+  width: 80%;
+  max-width: 350px;
+  height: 120px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+/* Kalsada */
+.road-track {
+  position: absolute;
+  bottom: 20px;
+  width: 100%;
+  height: 10px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  overflow: hidden;
+  z-index: 1;
+}
+
+/* Progress Bar (Pumupuno mula kaliwa pakanan) */
+.road-progress {
+  height: 100%;
+  background: #ffffff;
+  width: 0%;
+  animation: fillRoad 5s linear forwards;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+}
+
+/* Sasakyan */
+.car-container {
+  position: absolute;
+  bottom: 25px; 
+  left: 0%; 
+  animation: driveCar 5s linear forwards;
+  z-index: 5;
+}
+
+/* Custom SVG Styling */
+.car-icon {
+  width: 60px;
+  height: 60px;
+  color: #ffffff;
+  filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.3));
+}
+
+/* --- MGA ANIMATIONS --- */
+
+/* 1. Pag-fill ng kalsada */
+@keyframes fillRoad {
+  0% { width: 0%; }
+  100% { width: 100%; }
+}
+
+/* 2. Pag-drive ng sasakyan (Diretso na, walang baliktad) */
+@keyframes driveCar {
+  0% { 
+    left: 0%; 
+    transform: translateY(0); 
+  }
+  95% { 
+    left: calc(100% - 60px); /* Tutugma sa dulo ng kalsada */
+    transform: translateY(0);
+  }
+  97% { 
+    left: calc(100% - 60px); 
+    transform: translateY(-4px); /* Konting bounce pag-preno */
+  }
+  100% { 
+    left: calc(100% - 60px); 
+    transform: translateY(0); 
+  }
+}
+
+/* --- TEXT --- */
+.loading-title {
+  color: #ffffff;
+  font-size: 40px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  margin: 0;
+  text-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.loading-title span {
+  color: #bae6fd;
+}
+
+.loading-subtitle {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 15px;
+  font-weight: 600;
+  margin-top: 8px;
+  letter-spacing: 1px;
+  animation: pulseText 1.5s ease-in-out infinite;
+}
+
+@keyframes pulseText {
+  0% { opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { opacity: 0.6; }
+}
