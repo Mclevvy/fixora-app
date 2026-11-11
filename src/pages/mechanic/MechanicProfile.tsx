@@ -12,14 +12,14 @@ import {
 } from '@ionic/react';
 import { 
   saveOutline, logOutOutline, star, locationOutline, navigateOutline, addOutline, trashOutline,
-  cameraOutline // ✅ IDINAGDAG
+  cameraOutline, searchOutline // ✅ IDINAGDAG ANG searchOutline
 } from 'ionicons/icons';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import {
   getMechanicProfile,
   saveMechanicProfile,
-  uploadProfilePicture, // ✅ IDINAGDAG
+  uploadProfilePicture,
 } from '../../api/firebaseService';
 import { reverseGeocode } from '../../api/geocoding';
 import { Mechanic, MechanicSchedule, ServiceItem } from '../../types';
@@ -33,7 +33,7 @@ interface LocalProfile {
   fullName: string;
   email: string;
   phone: string;
-  profileImage?: string; // ✅ IDINAGDAG PARA MAKAPASOK ANG IMAGE
+  profileImage?: string;
   specialization: string;
   specializations: string[];
   category: 'repair' | 'roadside' | 'both';
@@ -54,18 +54,16 @@ const defaultProfile = (id: string, fullName: string, email: string, profileImag
 });
 
 const MechanicProfile: React.FC = () => {
-  const { user, logout, updateUser } = useAuth(); // ✅ IDINAGDAG ANG updateUser
+  const { user, logout, updateUser } = useAuth(); 
   const navigate = useNavigate();
   const [profile, setProfile] = useState<LocalProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isLocating, setIsLocating] = useState(false);
+  const [isSearchingAddress, setIsSearchingAddress] = useState(false); // ✅ BAGONG STATE
   const [toast, setToast] = useState({ show: false, msg: '', color: 'success' });
 
-  // ✅ States para sa pag-add ng bagong service
   const [newServiceName, setNewServiceName] = useState('');
   const [newServicePrice, setNewServicePrice] = useState('');
-  
-  // ✅ BAGONG STATE PARA SA IMAGE UPLOAD
   const [isUploadingImage, setIsUploadingImage] = useState(false);
 
   useEffect(() => {
@@ -80,7 +78,7 @@ const MechanicProfile: React.FC = () => {
       if (p) {
         setProfile({
           id: user.id, fullName: p.fullName || user.fullName || '', email: p.email || user.email || '',
-          profileImage: p.profileImage || user.profileImage || '', // ✅ Kunin ang image
+          profileImage: p.profileImage || user.profileImage || '', 
           phone: p.phone || '', specialization: p.specialization || 'General Repair',
           specializations: p.specializations || [], category: p.category || 'repair',
           status: p.status || 'offline', rating: p.rating || 0, totalReviews: p.totalReviews || 0,
@@ -96,7 +94,6 @@ const MechanicProfile: React.FC = () => {
     }
   };
 
-  // ✅ BAGONG FUNCTION PARA SA PAG-UPLOAD NG IMAGE
   const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file || !user || !profile) return;
@@ -110,7 +107,7 @@ const MechanicProfile: React.FC = () => {
     try {
       const newImageUrl = await uploadProfilePicture(user.id, file);
       setProfile({ ...profile, profileImage: newImageUrl });
-      updateUser({ ...user, profileImage: newImageUrl }); // I-update ang global auth state
+      updateUser({ ...user, profileImage: newImageUrl }); 
       setToast({ show: true, msg: 'Profile picture updated!', color: 'success' });
     } catch (error) {
       setToast({ show: true, msg: 'Failed to upload image', color: 'danger' });
@@ -119,7 +116,6 @@ const MechanicProfile: React.FC = () => {
     }
   };
 
-  // ✅ Function para magdagdag ng service
   const handleAddService = () => {
     if (!newServiceName.trim() || !newServicePrice.trim() || !profile) return;
     const newService: ServiceItem = {
@@ -135,13 +131,43 @@ const MechanicProfile: React.FC = () => {
     setNewServicePrice('');
   };
 
-  // ✅ Function para magdelete ng service
   const handleRemoveService = (id: string) => {
     if (!profile) return;
     setProfile({
       ...profile,
       services: profile.services.filter((s) => s.id !== id),
     });
+  };
+
+  // ✅ BAGONG FUNCTION: Mag-search ng address papuntang coordinates
+  const handleSearchAddress = async () => {
+    if (!profile || !profile.location.address?.trim()) return;
+    
+    setIsSearchingAddress(true);
+    try {
+      const query = encodeURIComponent(profile.location.address);
+      // Gumagamit ng OpenStreetMap Nominatim API para maghanap ng Lat/Lng base sa text
+      const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${query}&limit=1`);
+      const data = await res.json();
+
+      if (data && data.length > 0) {
+        const lat = parseFloat(data[0].lat);
+        const lon = parseFloat(data[0].lon);
+        
+        setProfile({
+          ...profile,
+          location: { ...profile.location, latitude: lat, longitude: lon }
+        });
+        setToast({ show: true, msg: 'Location found on map!', color: 'success' });
+      } else {
+        setToast({ show: true, msg: 'Address not found. Try a more specific location.', color: 'warning' });
+      }
+    } catch (error) {
+      console.error(error);
+      setToast({ show: true, msg: 'Failed to search address.', color: 'danger' });
+    } finally {
+      setIsSearchingAddress(false);
+    }
   };
 
   const handleGetGPS = () => {
@@ -193,7 +219,7 @@ const MechanicProfile: React.FC = () => {
     try {
       const data: Partial<Mechanic> = {
         fullName: profile.fullName, email: profile.email, phone: profile.phone,
-        profileImage: profile.profileImage, // ✅ Isama sa save
+        profileImage: profile.profileImage, 
         specialization: profile.specialization, specializations: profile.specializations,
         category: profile.category, status: profile.status, 
         services: profile.services, 
@@ -227,48 +253,26 @@ const MechanicProfile: React.FC = () => {
       <IonContent className="mech-profile" fullscreen>
         <div className="mp-header">
           
-                    {/* ✅ BINAGO: CLICKABLE AVATAR NA MAY CAMERA ICON */}
           <label htmlFor="mech-profile-upload" style={{ cursor: 'pointer', position: 'relative', display: 'inline-block' }}>
             <div className="mp-avatar" style={{ overflow: 'hidden', padding: 0 }}>
               {isUploadingImage ? (
                 <IonSpinner name="crescent" style={{ color: 'white' }} />
               ) : profile.profileImage ? (
-                <img 
-                  src={profile.profileImage} 
-                  alt={profile.fullName} 
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
-                />
+                <img src={profile.profileImage} alt={profile.fullName} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               ) : (
                 profile.fullName.charAt(0).toUpperCase() || 'M'
               )}
             </div>
             
-            {/* ✅ INAYOS: Puting background, may shadow, at bahagyang lumalabas sa gilid */}
             <div style={{
-              position: 'absolute', 
-              bottom: '0px', 
-              right: '0px', 
-              background: '#ffffff', 
-              borderRadius: '50%', 
-              padding: '8px', 
-              display: 'flex', 
-              alignItems: 'center', 
-              justifyContent: 'center', 
-              border: '2px solid #e2e8f0',
-              boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
-              zIndex: 10
+              position: 'absolute', bottom: '0px', right: '0px', background: '#ffffff', 
+              borderRadius: '50%', padding: '8px', display: 'flex', alignItems: 'center', 
+              justifyContent: 'center', border: '2px solid #e2e8f0', boxShadow: '0 4px 6px rgba(0,0,0,0.1)', zIndex: 10
             }}>
               <IonIcon icon={cameraOutline} style={{ color: '#0ea5e9', fontSize: '18px' }} />
             </div>
           </label>
-          <input 
-            id="mech-profile-upload" 
-            type="file" 
-            accept="image/*" 
-            style={{ display: 'none' }} 
-            onChange={handleImageUpload} 
-            disabled={isUploadingImage}
-          />
+          <input id="mech-profile-upload" type="file" accept="image/*" style={{ display: 'none' }} onChange={handleImageUpload} disabled={isUploadingImage} />
 
           <h1>{profile.fullName}</h1>
           <p>{profile.email}</p>
@@ -283,20 +287,13 @@ const MechanicProfile: React.FC = () => {
         <div className="mp-section">
           <h2>Customer Preview</h2>
           <div className="mp-card-preview">
-            
-            {/* ✅ BINAGO: Ipinapakita ang picture sa Customer Preview */}
             <div className="mp-preview-avatar" style={{ overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               {profile.profileImage ? (
-                <img 
-                  src={profile.profileImage} 
-                  alt={profile.fullName} 
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
-                />
+                <img src={profile.profileImage} alt={profile.fullName} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               ) : (
                 profile.fullName.charAt(0).toUpperCase()
               )}
             </div>
-
             <div className="mp-preview-info">
               <h3>{profile.fullName}</h3>
               <p>{profile.specialization}</p>
@@ -321,12 +318,9 @@ const MechanicProfile: React.FC = () => {
           </div>
         </div>
 
-        {/* ✅ SECTION PARA SA MGA SERBISYO */}
         <div className="mp-section">
           <h2>My Services & Prices</h2>
           <div className="mp-card">
-            
-            {/* Listahan ng Services */}
             {profile.services.length === 0 ? (
               <p style={{ fontSize: '13px', color: '#64748b', margin: '0 0 10px 0' }}>No services added yet. Add one below.</p>
             ) : (
@@ -344,29 +338,13 @@ const MechanicProfile: React.FC = () => {
                 ))}
               </div>
             )}
-
-            {/* Input para magdagdag ng service */}
             <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-              <IonInput 
-                placeholder="Service Name (e.g. Vulcanize)" 
-                value={newServiceName} 
-                onIonInput={(e) => setNewServiceName(e.detail.value || '')} 
-                className="mp-input" 
-                style={{ flex: 2, marginBottom: 0 }} 
-              />
-              <IonInput 
-                type="number" 
-                placeholder="Price" 
-                value={newServicePrice} 
-                onIonInput={(e) => setNewServicePrice(e.detail.value || '')} 
-                className="mp-input" 
-                style={{ flex: 1, marginBottom: 0 }} 
-              />
+              <IonInput placeholder="Service Name (e.g. Vulcanize)" value={newServiceName} onIonInput={(e) => setNewServiceName(e.detail.value || '')} className="mp-input" style={{ flex: 2, marginBottom: 0 }} />
+              <IonInput type="number" placeholder="Price" value={newServicePrice} onIonInput={(e) => setNewServicePrice(e.detail.value || '')} className="mp-input" style={{ flex: 1, marginBottom: 0 }} />
               <IonButton onClick={handleAddService} style={{ '--background': '#0ea5e9', height: '44px', margin: 0 }}>
                 <IonIcon icon={addOutline} />
               </IonButton>
             </div>
-
           </div>
         </div>
 
@@ -389,9 +367,33 @@ const MechanicProfile: React.FC = () => {
         <div className="mp-section">
           <h2>Shop / Base Location</h2>
           <div className="mp-card">
-            <IonTextarea label="Address" labelPlacement="floating" value={profile.location.address} onIonInput={(e) => setProfile({ ...profile, location: { ...profile.location, address: e.detail.value || '' } })} autoGrow className="mp-input" />
+            <IonTextarea 
+              label="Address" 
+              labelPlacement="floating" 
+              value={profile.location.address} 
+              onIonInput={(e) => setProfile({ ...profile, location: { ...profile.location, address: e.detail.value || '' } })} 
+              autoGrow 
+              className="mp-input" 
+            />
             
-            <button onClick={handleGetGPS} disabled={isLocating} style={{ width: '100%', padding: '12px', marginTop: '10px', background: '#e0f2fe', color: '#0ea5e9', border: 'none', borderRadius: '8px', fontWeight: 'bold', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+            {/* ✅ BAGONG DAGDAG: SEARCH ADDRESS BUTTON */}
+            <button 
+              onClick={handleSearchAddress} 
+              disabled={isSearchingAddress || !profile.location.address}
+              style={{ 
+                width: '100%', padding: '12px', marginTop: '8px', 
+                background: isSearchingAddress || !profile.location.address ? '#e2e8f0' : '#0ea5e9', 
+                color: isSearchingAddress || !profile.location.address ? '#94a3b8' : 'white', 
+                border: 'none', borderRadius: '8px', fontWeight: 'bold', 
+                display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', 
+                cursor: isSearchingAddress || !profile.location.address ? 'not-allowed' : 'pointer' 
+              }}
+            >
+              {isSearchingAddress ? <IonSpinner name="crescent" style={{ width: '16px', height: '16px' }} /> : <IonIcon icon={searchOutline} />}
+              {isSearchingAddress ? 'Searching...' : 'Find Address on Map'}
+            </button>
+
+            <button onClick={handleGetGPS} disabled={isLocating} style={{ width: '100%', padding: '12px', marginTop: '8px', background: '#e0f2fe', color: '#0ea5e9', border: 'none', borderRadius: '8px', fontWeight: 'bold', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
               {isLocating ? <IonSpinner name="crescent" style={{ width: '16px', height: '16px' }} /> : <IonIcon icon={navigateOutline} />}
               {isLocating ? 'Getting GPS...' : 'Use Current GPS Location'}
             </button>

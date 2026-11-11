@@ -14,7 +14,7 @@ import { Booking, BookingStatus } from '../../types';
 import InteractiveMap from '../../components/InteractiveMap';
 import './TrackMechanic.css';
 
-// ✅ WEATHERAPI.COM API KEY (Paki-check kung ito nga ang key mo)
+// ✅ WEATHERAPI.COM API KEY
 const WEATHER_API_KEY = 'da3cfa93f9474e29871125721260611'; 
 
 const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
@@ -45,11 +45,10 @@ const getWeatherInfo = (conditionText: string | undefined) => {
   return { icon: '🌤️', text: conditionText };
 };
 
-const formatWeatherTime = (isoString: string | undefined) => {
-  if (!isoString) return 'Just now';
+// ✅ GAGAMITIN NATIN ANG ORAS NG DEVICE PARA HINDI MAGMUKHANG LATE
+const formatCurrentTime = () => {
   try {
-    const date = new Date(isoString);
-    return date.toLocaleString('en-PH', { 
+    return new Date().toLocaleString('en-PH', { 
       timeZone: 'Asia/Manila',
       weekday: 'long', hour: 'numeric', minute: '2-digit', hour12: true
     });
@@ -101,27 +100,25 @@ const TrackMechanic: React.FC = () => {
       try {
         console.log(`🌤️ Fetching WeatherAPI for lat: ${lat}, lng: ${lng}`);
         
-        // ✅ WEATHERAPI.COM ENDPOINT (Tama na ito, huwag babaguhin)
+        // ✅ WEATHERAPI.COM ENDPOINT
         const res = await fetch(`https://api.weatherapi.com/v1/current.json?key=${WEATHER_API_KEY}&q=${lat},${lng}&aqi=no`);
         
         if (!res.ok) {
           console.error("❌ WeatherAPI Error Status:", res.status);
-          const errData = await res.json();
-          console.error("❌ WeatherAPI Error Data:", errData);
           return null;
         }
 
         const data = await res.json();
         console.log("🌤️ WeatherAPI Response:", data); 
 
-        if (data.current) {
+        if (data.current && data.location) {
           return {
             temperature: Math.round(data.current.temp_c),
             conditionText: data.current.condition.text, 
             humidity: data.current.humidity ?? 0,
             windSpeed: Math.round(data.current.wind_kph ?? 0),
-            precipitation: data.current.precip_mm ?? 0, // WeatherAPI uses mm for precipitation
-            time: data.current.last_updated,
+            precipitation: data.current.precip_mm ?? 0,
+            locationName: data.location.name, // ✅ Makikita natin kung saan galing ang data
           };
         }
         return null;
@@ -202,7 +199,10 @@ const TrackMechanic: React.FC = () => {
         </div>
         <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
           <div style={{ fontSize: '12px', fontWeight: 700, color: '#1e293b' }}>{label}</div>
-          <div style={{ fontSize: '10px', color: '#64748b', marginTop: '2px' }}>{formatWeatherTime(data.time)}</div>
+          {/* ✅ IPINAKITA ANG LOCATION NAME PARA MALAMAN KUNG SAAN GALING */}
+          <div style={{ fontSize: '9px', color: '#64748b', marginTop: '2px' }}>{data.locationName}</div>
+          {/* ✅ GINAMIT ANG ORAS NG DEVICE */}
+          <div style={{ fontSize: '10px', color: '#94a3b8', marginTop: '2px' }}>{formatCurrentTime()}</div>
           <div style={{ fontSize: '12px', color: '#0ea5e9', fontWeight: 600, marginTop: '2px' }}>{info.text}</div>
         </div>
       </div>

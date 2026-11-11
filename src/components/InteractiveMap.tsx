@@ -1,6 +1,6 @@
 // src/components/InteractiveMap.tsx
 import React, { useEffect } from 'react';
-import { MapContainer, TileLayer, Marker, useMap, useMapEvents, ZoomControl, Polyline } from 'react-leaflet'; // ✅ IDINAGDAG ANG Polyline
+import { MapContainer, TileLayer, Marker, useMap, useMapEvents, ZoomControl, Polyline } from 'react-leaflet';
 import { useIonViewWillLeave, useIonViewDidEnter } from '@ionic/react';
 import L from 'leaflet';
 
@@ -137,6 +137,7 @@ const LocationMarker: React.FC<{
         },
         click: () => {
           if (zoomOnClick) {
+            // ✅ Binaba ko sa 18 para hindi sumobra sa limitasyon ng tile server
             map.flyTo([latitude, longitude], 18, { animate: true });
           }
         }
@@ -153,7 +154,10 @@ const CustomerMarker: React.FC<{ lat: number, lng: number, zoomOnClick?: boolean
       icon={customerIcon} 
       eventHandlers={{
         click: () => {
-          if (zoomOnClick) map.flyTo([lat, lng], 18, { animate: true });
+          if (zoomOnClick) {
+            // ✅ Binaba ko rin sa 18 dito
+            map.flyTo([lat, lng], 18, { animate: true });
+          }
         }
       }}
     />
@@ -179,16 +183,24 @@ const InteractiveMap: React.FC<MapProps> = ({
   return (
     <div style={{ height, width: '100%', borderRadius: '14px', overflow: 'hidden', border: '1.5px solid #e5e7eb', position: 'relative', zIndex: 1 }}>
       <MapErrorBoundary>
-        <MapContainer center={[safeLat, safeLng]} zoom={zoom} style={{ height: '100%', width: '100%' }} scrollWheelZoom={false} zoomControl={false}>
+        {/* ✅ DAGDAG: maxZoom={19} para hindi lumampas ang user gamit ang zoom buttons */}
+        <MapContainer 
+          center={[safeLat, safeLng]} 
+          zoom={zoom} 
+          maxZoom={19} 
+          style={{ height: '100%', width: '100%' }} 
+          scrollWheelZoom={false} 
+          zoomControl={false}
+        >
+          {/* ✅ PINALITAN: OpenStreetMap imbes na Esri para mas detalyado at walang blank spots */}
           <TileLayer
-            attribution='Tiles &copy; Esri'
-            url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}"
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             maxZoom={19}
           />
           <ZoomControl position="topright" />
           <MapUpdater lat={safeLat} lng={safeLng} zoom={zoom} secondaryLat={safeSecondaryLat} secondaryLng={safeSecondaryLng} />
           
-          {/* ✅ DITO ANG BLUE CONNECTING LINE */}
           {safeSecondaryLat !== undefined && safeSecondaryLng !== undefined && (
             <Polyline
               positions={[
