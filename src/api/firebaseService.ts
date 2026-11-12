@@ -538,10 +538,11 @@ export const uploadProfilePicture = async (userId: string, file: File): Promise<
   try {
     const formData = new FormData();
     formData.append('image', file);
-    
+    //API NG IMAGE UPLOAD
     // ⚠️ PALITAN ITO NG API KEY MO GALING SA IMGBB.COM
     const IMGBB_API_KEY = '18181ce218f2f62e972e050b1c5eec1e'; 
     
+    //IMAGE
     const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
       method: 'POST',
       body: formData,
